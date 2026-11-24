@@ -1,0 +1,207 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>抢黄区 · 11 月 17 日原型</title></head><body><div id="yellow-sales-demo">
+  <style>
+    #yellow-sales-demo{--yp-bg:light-dark(#f5f7fa,#161a21);--yp-surface:light-dark(#fff,#202631);--yp-text:light-dark(#202938,#edf1f7);--yp-muted:light-dark(#697386,#a5afbf);--yp-line:light-dark(#e4e9f0,#37404f);--yp-blue:light-dark(#245eea,#8eafff);--yp-bluebg:light-dark(#edf3ff,#273753);--yp-green:light-dark(#11764b,#75d7ad);--yp-greenbg:light-dark(#eaf7f0,#233e34);--yp-amber:light-dark(#925800,#f1c46e);--yp-amberbg:light-dark(#fff5df,#443924);--yp-red:light-dark(#b8323b,#ff9ca3);--yp-redbg:light-dark(#fff0f0,#45292e);color:var(--yp-text);font:14px/1.55 -apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;background:var(--yp-bg);border:1px solid var(--yp-line);border-radius:16px;overflow:clip;color-scheme:light dark}
+    #yellow-sales-demo *{box-sizing:border-box}
+    #yellow-sales-demo h1,#yellow-sales-demo h2,#yellow-sales-demo h3,#yellow-sales-demo p{margin:0}
+    #yellow-sales-demo h1{font-size:18px;font-weight:600;letter-spacing:-.3px}
+    #yellow-sales-demo h2{font-size:20px;font-weight:600;letter-spacing:-.3px}
+    #yellow-sales-demo h3{font-size:15px;font-weight:600}
+    #yellow-sales-demo button,#yellow-sales-demo input,#yellow-sales-demo textarea,#yellow-sales-demo select{font:inherit}
+    #yellow-sales-demo button{cursor:pointer}
+    #yellow-sales-demo button:disabled{cursor:not-allowed;opacity:.52}
+    #yellow-sales-demo button:focus-visible,#yellow-sales-demo input:focus-visible,#yellow-sales-demo textarea:focus-visible{outline:3px solid var(--yp-blue);outline-offset:2px}
+    #yellow-sales-demo .yp-top{background:var(--yp-surface);padding:20px 110px 18px 24px;display:flex;gap:14px;align-items:center;border-bottom:1px solid var(--yp-line);flex-wrap:wrap}
+    #yellow-sales-demo .yp-mark{background:var(--yp-amberbg);color:var(--yp-amber);border:1px solid var(--yp-line);border-radius:12px;width:40px;height:40px;display:grid;place-items:center;font-weight:650;font-size:20px;flex:none}
+    #yellow-sales-demo .yp-sub{font-size:12px;color:var(--yp-muted);margin-top:3px}
+    #yellow-sales-demo .yp-demo{padding:9px 24px;background:var(--yp-amberbg);color:var(--yp-amber);font-size:12px;display:flex;gap:12px;justify-content:space-between;flex-wrap:wrap}
+    #yellow-sales-demo .yp-shell{display:grid;grid-template-columns:156px minmax(0,1fr)}
+    #yellow-sales-demo .yp-side{background:var(--yp-surface);padding:22px 12px;border-right:1px solid var(--yp-line)}
+    #yellow-sales-demo .yp-nav{display:grid;gap:7px}
+    #yellow-sales-demo .yp-nav button{border:0;background:transparent;color:var(--yp-muted);padding:11px 13px;border-radius:8px;text-align:left;display:flex;justify-content:space-between;align-items:center;gap:8px}
+    #yellow-sales-demo .yp-nav button[aria-current=page]{background:var(--yp-bluebg);color:var(--yp-blue);font-weight:600}
+    #yellow-sales-demo .yp-role{margin-top:28px;padding:13px 8px 0;border-top:1px solid var(--yp-line)}
+    #yellow-sales-demo .yp-role button{margin-top:9px;width:100%}
+    #yellow-sales-demo .yp-main{padding:26px;min-width:0}
+    #yellow-sales-demo .yp-head{display:flex;justify-content:space-between;gap:16px;align-items:start;flex-wrap:wrap;margin-bottom:20px}
+    #yellow-sales-demo .yp-muted{color:var(--yp-muted)}
+    #yellow-sales-demo .yp-small{font-size:12px}
+    #yellow-sales-demo .yp-quota{background:var(--yp-surface);padding:9px 13px;border:1px solid var(--yp-line);border-radius:9px;white-space:nowrap}
+    #yellow-sales-demo .yp-quota b{font-size:19px;font-weight:600;color:var(--yp-text)}
+    #yellow-sales-demo .yp-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);gap:18px;align-items:start}
+    #yellow-sales-demo .yp-card{background:var(--yp-surface);border:1px solid var(--yp-line);border-radius:12px;padding:20px;min-width:0}
+    #yellow-sales-demo .yp-stack{display:grid;gap:16px}
+    #yellow-sales-demo .yp-label{display:block;font-weight:550;margin-bottom:7px}
+    #yellow-sales-demo .yp-input{width:100%;border:1px solid var(--yp-line);border-radius:8px;background:var(--yp-surface);color:var(--yp-text);padding:11px 12px;min-width:0}
+    #yellow-sales-demo textarea.yp-input{min-height:108px;resize:vertical}
+    #yellow-sales-demo .yp-results{margin-top:13px;display:grid;gap:3px}
+    #yellow-sales-demo .yp-result{display:block;width:100%;text-align:left;border:1px solid transparent;border-bottom-color:var(--yp-line);background:var(--yp-surface);color:var(--yp-text);padding:13px 6px;border-radius:6px}
+    #yellow-sales-demo .yp-result:hover,#yellow-sales-demo .yp-result[aria-pressed=true]{background:var(--yp-bluebg);border-color:var(--yp-line)}
+    #yellow-sales-demo .yp-result strong{font-weight:550;display:block;overflow-wrap:anywhere}
+    #yellow-sales-demo .yp-result span{font-size:12px;color:var(--yp-muted);display:block;margin-top:5px}
+    #yellow-sales-demo .yp-button{padding:9px 13px;border:1px solid var(--yp-line);border-radius:8px;background:var(--yp-surface);color:var(--yp-text);min-height:39px;display:inline-flex;align-items:center;justify-content:center;gap:6px;text-align:center;white-space:normal}
+    #yellow-sales-demo .yp-primary{background:light-dark(#245eea,#789fff);color:light-dark(#fff,#111b30);border-color:transparent;font-weight:550}
+    #yellow-sales-demo .yp-danger{color:var(--yp-red)}
+    #yellow-sales-demo .yp-full{width:100%}
+    #yellow-sales-demo .yp-link{border:0;background:transparent;color:var(--yp-blue);padding:6px 0;text-align:left}
+    #yellow-sales-demo .yp-badge{display:inline-block;border-radius:5px;padding:3px 7px;font-size:12px;color:var(--yp-muted);background:var(--yp-bg);vertical-align:middle}
+    #yellow-sales-demo .yp-badge.green{color:var(--yp-green);background:var(--yp-greenbg)}
+    #yellow-sales-demo .yp-badge.amber{color:var(--yp-amber);background:var(--yp-amberbg)}
+    #yellow-sales-demo .yp-badge.blue{color:var(--yp-blue);background:var(--yp-bluebg)}
+    #yellow-sales-demo .yp-badge.red{color:var(--yp-red);background:var(--yp-redbg)}
+    #yellow-sales-demo .yp-company{font-size:16px;font-weight:600;overflow-wrap:anywhere;margin-bottom:8px}
+    #yellow-sales-demo .yp-occupied{margin:16px 0;padding:13px 0;border-top:1px solid var(--yp-line);border-bottom:1px solid var(--yp-line)}
+    #yellow-sales-demo .yp-occupied-row{display:flex;align-items:start;justify-content:space-between;gap:10px;margin-top:10px;font-size:12px}
+    #yellow-sales-demo .yp-occupied-row strong{font-weight:550;font-size:13px}
+    #yellow-sales-demo .yp-note{font-size:12px;color:var(--yp-muted);margin-top:7px}
+    #yellow-sales-demo .yp-box{padding:12px 14px;background:var(--yp-bg);border-radius:8px;margin:15px 0;color:var(--yp-muted);font-size:12px;overflow-wrap:anywhere}
+    #yellow-sales-demo .yp-box strong{color:var(--yp-text);font-weight:550}
+    #yellow-sales-demo .yp-error{color:var(--yp-red);font-size:13px;margin:9px 0}
+    #yellow-sales-demo .yp-alert{border-radius:9px;background:var(--yp-greenbg);color:var(--yp-green);padding:13px 15px;margin-bottom:18px;display:flex;align-items:center;gap:12px;justify-content:space-between;flex-wrap:wrap}
+    #yellow-sales-demo .yp-alert.is-error{background:var(--yp-redbg);color:var(--yp-red)}
+    #yellow-sales-demo .yp-empty{padding:38px 16px;text-align:center;color:var(--yp-muted);font-size:13px}
+    #yellow-sales-demo .yp-tabs{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
+    #yellow-sales-demo .yp-tabs button{border:1px solid var(--yp-line);border-radius:7px;padding:7px 12px;background:var(--yp-surface);color:var(--yp-muted)}
+    #yellow-sales-demo .yp-tabs button[aria-pressed=true]{background:var(--yp-bluebg);color:var(--yp-blue);border-color:var(--yp-blue)}
+    #yellow-sales-demo .yp-record{border-bottom:1px solid var(--yp-line);padding:17px 0;display:grid;gap:12px}
+    #yellow-sales-demo .yp-record:first-child{padding-top:0}
+    #yellow-sales-demo .yp-record:last-child{border-bottom:0;padding-bottom:0}
+    #yellow-sales-demo .yp-row{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+    #yellow-sales-demo .yp-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+    #yellow-sales-demo .yp-dl{display:grid;grid-template-columns:85px minmax(0,1fr);gap:13px 10px;margin:18px 0;font-size:13px}
+    #yellow-sales-demo .yp-dl dt{color:var(--yp-muted)}
+    #yellow-sales-demo .yp-dl dd{margin:0;overflow-wrap:anywhere}
+    #yellow-sales-demo .yp-back{margin-bottom:13px}
+    #yellow-sales-demo .yp-time{font-variant-numeric:tabular-nums}
+    #yellow-sales-demo .yp-log{border-left:2px solid var(--yp-line);padding-left:13px;margin-top:12px;color:var(--yp-muted);font-size:12px}
+    #yellow-sales-demo .yp-log p{margin-top:9px}
+    #yellow-sales-demo .yp-demo-controls{padding:15px 24px;border-top:1px solid var(--yp-line);background:var(--yp-surface);font-size:12px;color:var(--yp-muted)}
+    #yellow-sales-demo .yp-demo-controls summary{cursor:pointer}
+    #yellow-sales-demo .yp-demo-controls .yp-actions{margin-top:12px}
+    #yellow-sales-demo .yp-demo-controls p{margin-top:10px}
+    #yellow-sales-demo .yp-rule{border:0;border-top:1px solid var(--yp-line);margin:18px 0}
+    @media(max-width:760px){#yellow-sales-demo .yp-shell{grid-template-columns:1fr}#yellow-sales-demo .yp-side{border-right:0;border-bottom:1px solid var(--yp-line);padding:12px 18px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}#yellow-sales-demo .yp-nav{display:flex;flex-wrap:wrap}#yellow-sales-demo .yp-role{margin:0;padding:0;border:0;display:flex;align-items:center;gap:10px}#yellow-sales-demo .yp-role button{width:auto;margin:0}#yellow-sales-demo .yp-main{padding:20px}#yellow-sales-demo .yp-grid{grid-template-columns:1fr}}
+    @media(max-width:430px){#yellow-sales-demo .yp-top{padding:16px 90px 16px 16px}#yellow-sales-demo .yp-mark{display:none}#yellow-sales-demo .yp-main{padding:16px}#yellow-sales-demo .yp-card{padding:15px}#yellow-sales-demo .yp-demo{padding:10px 16px}#yellow-sales-demo .yp-input{font-size:16px}#yellow-sales-demo .yp-button{min-height:44px}#yellow-sales-demo h2{font-size:18px}#yellow-sales-demo .yp-dl{grid-template-columns:70px minmax(0,1fr)}}
+  </style>
+  <header class="yp-top"><div class="yp-mark" aria-hidden="true">黄</div><div><h1>客户保护工作台</h1><p class="yp-sub">FBIF · 销售与管理员体验演示</p></div></header>
+  <div class="yp-demo"><span>模拟数据 · 未连接企查查或飞书</span><span>演示时间：2026/11/17 10:00</span></div>
+  <div class="yp-shell"><aside class="yp-side" id="yp-sidebar"></aside><main class="yp-main" id="yp-main"></main></div>
+  <details class="yp-demo-controls"><summary>演示设置与计时说明</summary><div id="yp-demo-actions" class="yp-actions"></div><p>所有公司名称、集团关系、人员及保护状态均为模拟。演示按登记时刻起算、下一天计第1天；正式日界口径待确认。本次日期限定11—12月，不跨春节、国庆；正式版需排除这两个假期的完整放假区间。</p><p>“重置”只恢复本演示的模拟状态。真实表格不读取、不写入、不删除；模拟中作废的业务记录也会保留。</p></details>
+  <script>
+  (()=>{
+    /* MODEL_START */
+    const DemoModel=(()=>{
+      const DAY=86400000,NOW=Date.parse('2026-11-17T10:00:00+08:00'),ME='销售甲';
+      const ts=s=>Date.parse(s+'T10:00:00+08:00');
+      const companies=[
+        {id:'c1',name:'示例甲（华东）食品有限公司',city:'上海',industry:'食品制造',group:'示例甲集团',words:'示例甲 示例甲可乐 sample-a',existing:true},
+        {id:'c2',name:'示例甲（华南）饮料有限公司',city:'广州',industry:'饮料制造',group:'示例甲集团',words:'示例甲 示例甲可乐 sample-a',existing:false},
+        {id:'c3',name:'示例乙（华东）食品有限公司',city:'苏州',industry:'食品制造',group:'示例乙集团',words:'示例乙 sample-b',existing:true},
+        {id:'c4',name:'示例丙食品科技有限公司',city:'杭州',industry:'食品研发',group:null,words:'示例丙',existing:true},
+        {id:'c5',name:'示例丁饮品有限公司',city:'成都',industry:'饮料制造',group:null,words:'示例丁 新企业',existing:false},
+        {id:'c6',name:'示例戊食品有限公司',city:'宁波',industry:'食品制造',group:null,words:'示例戊',existing:true},
+        {id:'c7',name:'示例己乳业有限公司',city:'青岛',industry:'乳品制造',group:null,words:'示例己',existing:true},
+        {id:'c8',name:'示例庚食品有限公司',city:'长沙',industry:'食品制造',group:null,words:'示例庚 保护',existing:true,annual:'销售丙'}
+      ];
+      const company=id=>companies.find(c=>c.id===id);
+      const dayKey=t=>new Date(t+8*3600000).toISOString().slice(0,10);
+      function addDays(t,n,holidays=[]){let d=t,count=0;while(count<n){d+=DAY;if(!holidays.some(([a,b])=>dayKey(d)>=a&&dayKey(d)<=b))count++;}return d;}
+      function norm(v){const x=v.trim().replace(/[\s　·，,。/\\_-]/g,'').toLowerCase();return ({'采购':'采购部','采购部门':'采购部','市场':'市场部','市场部门':'市场部','研发':'研发部','研发部门':'研发部'})[x]||x;}
+      function scope(cid,dept){const c=company(cid);return c?(c.group?'g:'+c.group+':'+norm(dept):'c:'+cid):cid;}
+      function seed(){return {v:2,serial:20,role:'sales',page:'claim',filter:'active',adminFilter:'pending',query:'示例甲',selected:null,dept:'',panel:null,flash:null,race:false,approvalRace:false,created:[],records:[
+        {id:'r1',cid:'c1',dept:'市场部',owner:ME,start:ts('2026-11-10'),firstEnd:ts('2026-11-24'),end:ts('2026-11-24'),void:false,second:false,logs:['11/10 10:00 · 销售甲登记首次保护']},
+        {id:'r2',cid:'c4',dept:'',owner:ME,start:ts('2026-11-02'),firstEnd:ts('2026-11-16'),end:ts('2026-11-16'),void:false,second:false,logs:['11/02 10:00 · 销售甲登记首次保护','11/16 10:00 · 首次保护到期']},
+        {id:'r3',cid:'c6',dept:'',owner:ME,start:ts('2026-11-07'),firstEnd:ts('2026-11-21'),end:ts('2026-11-21'),void:false,second:false,logs:['11/07 10:00 · 销售甲登记首次保护']},
+        {id:'r4',cid:'c1',dept:'采购部',owner:'销售丙',start:ts('2026-11-13'),firstEnd:ts('2026-11-27'),end:ts('2026-11-27'),void:false,second:false,logs:[]},
+        {id:'r5',cid:'c3',dept:'研发部',owner:'销售丁',start:ts('2026-11-09'),firstEnd:ts('2026-11-23'),end:ts('2026-11-23'),void:false,second:false,logs:['11/09 10:00 · 销售丁登记首次保护']},
+        {id:'r6',cid:'c7',dept:'',owner:'销售戊',start:ts('2026-11-01'),firstEnd:ts('2026-11-15'),end:ts('2026-11-15'),void:false,second:false,logs:['11/15 10:00 · 首次保护到期']},
+        {id:'r7',cid:'c3',dept:'市场部',owner:ME,start:ts('2026-10-30'),firstEnd:ts('2026-11-13'),end:ts('2026-11-13'),void:true,second:false,logs:['11/03 10:00 · 销售甲作废：部门填写错误']}
+      ],requests:[
+        {id:'q1',rid:'r5',reason:'已完成需求沟通，本周安排样品评估，申请继续跟进。',at:ts('2026-11-16'),status:'pending'},
+        {id:'q2',rid:'r6',reason:'客户已重新启动项目，明天进行预算确认，希望恢复保护。',at:ts('2026-11-16'),status:'pending'}
+      ]};}
+      const active=(r,now=NOW)=>!r.void&&r.end>now;
+      const count=(s,owner=ME)=>s.records.filter(r=>r.owner===owner&&active(r)).length;
+      const pending=(s,rid)=>s.requests.find(q=>q.rid===rid&&q.status==='pending');
+      function conflict(s,cid,dept,exclude){return s.records.find(r=>r.id!==exclude&&active(r)&&scope(r.cid,r.dept)===scope(cid,dept));}
+      function eligible(s,cid,dept,owner=ME,exclude){const c=company(cid);if(!c)return '请先选择准确公司';if(c.group&&!dept.trim())return '请填写要保护的部门';if(c.annual)return '该公司属于2026年度保护，归属'+c.annual;if(conflict(s,cid,dept,exclude))return '该保护范围已被占用';const base=s.records.filter(r=>r.id!==exclude&&r.owner===owner&&active(r)).length;if(base>=15)return '有效黄区已满15条';return '';}
+      const newID=(s,p)=>p+(++s.serial);
+      function claim(s,cid,dept){const c=company(cid);let err=eligible(s,cid,dept);if(err)return {error:err};if(s.race){s.race=false;const end=addDays(NOW,14);s.records.push({id:newID(s,'r'),cid,dept:c.group?dept.trim():'',owner:'销售丙',start:NOW,firstEnd:end,end,void:false,second:false,logs:['11/17 10:00 · 销售丙先提交成功']});return {error:'提交时销售丙先登记成功，当前范围已被占用。你的名额未扣减。'};}
+        if(!c.existing&&!s.created.some(x=>x.name===c.name))s.created.push({name:c.name});
+        const end=addDays(NOW,14),r={id:newID(s,'r'),cid,dept:c.group?dept.trim():'',owner:ME,start:NOW,firstEnd:end,end,void:false,second:false,logs:['11/17 10:00 · 销售甲登记首次保护']};s.records.unshift(r);return {record:r};}
+      function request(s,rid,reason){const r=s.records.find(x=>x.id===rid);if(!r||r.owner!==ME||r.void)return {error:'这条记录不能申请续保'};if(r.second)return {error:'本次黄区已使用二次保护'};if(pending(s,rid))return {error:'已有待审批申请，请勿重复提交'};if(!reason.trim())return {error:'请填写申请原因'};const q={id:newID(s,'q'),rid,reason:reason.trim(),at:NOW,status:'pending'};s.requests.unshift(q);r.logs.push('11/17 10:00 · 销售甲申请二次保护');return {request:q};}
+      function approvalBlock(s,q){const r=s.records.find(x=>x.id===q.rid);if(!r||r.void)return '原黄区已作废';if(r.second)return '已使用二次保护';return eligible(s,r.cid,r.dept,r.owner,r.id);}
+      function decide(s,qid,approved,note){if(s.role!=='manager')return {error:'仅销售管理员可以审批'};const q=s.requests.find(x=>x.id===qid);if(!q||q.status!=='pending')return {error:'申请已处理，请勿重复操作'};const r=s.records.find(x=>x.id===q.rid);if(!approved&&!note.trim())return {error:'驳回时请填写原因'};
+        if(approved){if(s.approvalRace&&!active(r)){s.approvalRace=false;const end=addDays(NOW,14);s.records.push({id:newID(s,'r'),cid:r.cid,dept:r.dept,owner:'销售丙',start:NOW,firstEnd:end,end,void:false,second:false,logs:[]});}const err=approvalBlock(s,q);if(err)return {error:err+'，未批准；申请继续待处理。'};q.from=active(r)?r.end:NOW;q.until=addDays(q.from,14);q.rule=active(r)?'接原到期日':'从批准生效时起';q.oldEnd=r.end;r.end=q.until;r.second=true;r.logs.push('11/17 10:00 · 审批员乙批准二次保护（'+q.rule+'）');}
+        else r.logs.push('11/17 10:00 · 审批员乙驳回二次保护：'+note.trim());q.status=approved?'approved':'rejected';q.note=note.trim();q.decided=NOW;return {request:q,record:r};}
+      function withdraw(s,qid){const q=s.requests.find(x=>x.id===qid);if(!q||q.status!=='pending')return {error:'仅待审批申请可撤回'};const r=s.records.find(x=>x.id===q.rid);if(r.owner!==ME||s.role!=='sales')return {error:'只能撤回自己的申请'};q.status='withdrawn';q.decided=NOW;r.logs.push('11/17 10:00 · 销售甲撤回二次保护申请');return {ok:true};}
+      function voidRecord(s,rid,reason){const r=s.records.find(x=>x.id===rid);if(!r||r.owner!==ME||s.role!=='sales'||r.void)return {error:'不能作废这条记录'};if(!reason.trim())return {error:'请填写作废原因'};r.void=true;r.logs.push('11/17 10:00 · 销售甲作废：'+reason.trim());const q=pending(s,rid);if(q){q.status='withdrawn';q.decided=NOW;}return {ok:true};}
+      function fillQuota(s){while(count(s)<15){const id=newID(s,'demo');s.records.push({id,cid:id,dept:'',owner:ME,start:NOW,firstEnd:addDays(NOW,14),end:addDays(NOW,14),void:false,second:false,logs:['11/17 10:00 · 演示名额占位']});}}
+      return {DAY,NOW,ME,companies,company,dayKey,addDays,norm,scope,seed,active,count,pending,conflict,eligible,claim,request,approvalBlock,decide,withdraw,voidRecord,fillQuota};
+    })();
+    /* MODEL_END */
+    const root=document.getElementById('yellow-sales-demo'),main=root.querySelector('#yp-main'),sidebar=root.querySelector('#yp-sidebar');
+    const M=DemoModel;let s=M.seed(),draft='';
+    const escape=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    const date=t=>new Intl.DateTimeFormat('zh-CN',{timeZone:'Asia/Shanghai',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hour12:false}).format(new Date(t));
+    const cName=r=>M.company(r.cid)?.name||'模拟占位企业 '+r.cid.replace('demo','');
+    const range=r=>{const c=M.company(r.cid);return c?.group?c.group+' · '+r.dept:cName(r)+' · 全公司';};
+    const btn=(text,action,extra='',kind='')=>`<button type="button" class="yp-button ${kind}" data-action="${action}" ${extra}>${text}</button>`;
+    const badge=(text,tone='')=>`<span class="yp-badge ${tone}">${escape(text)}</span>`;
+    function persist(){const p={...s,flash:null};const data={modelContent:{demo:'黄区前端模拟',role:s.role,page:s.page,activeCount:M.count(s),pendingRequests:s.requests.filter(q=>q.status==='pending').length,lastResult:s.flash?.text||null},privateContent:{yellowDemo:p}};if(new TextEncoder().encode(JSON.stringify(data)).byteLength<16000)window.openai?.setWidgetState?.(data)?.catch(()=>{});}
+    function restore(value){const v=value?.privateContent?.yellowDemo;if(v?.v===2&&Array.isArray(v.records)&&Array.isArray(v.requests)){s=v;s.flash=null;return true;}return false;}
+    restore(window.openai?.widgetState);window.addEventListener('openai:set_globals',e=>{if(restore(e.detail?.globals?.widgetState))render();});
+    function flash(text,error=false,target=null){s.flash={text,error,target};}
+    function flashHTML(){return s.flash?`<div class="yp-alert ${s.flash.error?'is-error':''}" role="${s.flash.error?'alert':'status'}"><span>${escape(s.flash.text)}</span>${s.flash.target?btn('查看记录','detail',`data-id="${s.flash.target}"`):''}</div>`:'';}
+    function nav(){const n=M.count(s),pending=s.requests.filter(q=>q.status==='pending').length;sidebar.innerHTML=`<nav class="yp-nav" aria-label="工作台导航">${s.role==='sales'?`<button type="button" data-action="nav" data-page="claim" ${s.page==='claim'?'aria-current="page"':''}>抢黄区</button><button type="button" data-action="nav" data-page="mine" ${s.page==='mine'?'aria-current="page"':''}>我的黄区 <span>${n}</span></button>`:`<button type="button" data-action="nav" data-page="approvals" aria-current="page">审批中心 <span>${pending}</span></button>`}</nav><div class="yp-role"><div><div class="yp-small yp-muted">当前体验身份</div><strong>${s.role==='sales'?'销售 · 销售甲':'销售管理员 · 审批员乙'}</strong></div>${btn(s.role==='sales'?'切换销售管理员':'切换销售','role')}</div>`;}
+    function head(title,sub,quota=false){return `<div class="yp-head"><div><h2>${title}</h2><p class="yp-muted yp-small" style="margin-top:5px">${sub}</p></div>${quota?`<div class="yp-quota"><b>${M.count(s)}</b> / 15 <span class="yp-muted yp-small">有效黄区</span></div>`:''}</div>`;}
+    function matches(){const q=s.query.trim().toLowerCase();return M.companies.filter(c=>!q||(c.name+' '+c.words+' '+c.city).toLowerCase().includes(q));}
+    function resultsHTML(){const list=matches();return list.length?list.map(c=>`<button type="button" class="yp-result" data-action="select-company" data-id="${c.id}" aria-pressed="${s.selected===c.id}"><strong>${escape(c.name)}</strong><span>${escape(c.city)} · ${escape(c.industry)}</span></button>`).join(''):'<div class="yp-empty">未找到模拟企业<br>可试：示例甲、示例乙、示例丙、示例丁、示例戊、示例己、示例庚</div>';}
+    function scopePanel(){const c=M.company(s.selected);if(!c)return `<div class="yp-card"><h3>选定公司，即可登记</h3><div class="yp-empty">百强企业按集团＋部门保护<br>其他企业按公司保护</div><div class="yp-box">每人最多15条有效黄区 · 首次14自然日<br>集团同部门联动，只占1个名额</div></div>`;
+      const list=c.group?s.records.filter(r=>M.active(r)&&M.company(r.cid)?.group===c.group):s.records.filter(r=>M.active(r)&&r.cid===c.id);
+      const err=M.eligible(s,c.id,s.dept),hit=M.conflict(s,c.id,s.dept);const end=M.addDays(M.NOW,14);
+      return `<div class="yp-card"><div class="yp-company">${escape(c.name)}</div>${badge(c.group?'百强集团 · '+c.group:'普通企业',c.group?'blue':'')}
+        ${c.group?`<div class="yp-occupied"><h3>集团已保护部门</h3>${list.length?list.map(r=>`<div class="yp-occupied-row"><div><strong>${escape(r.dept)}</strong> · ${escape(r.owner)}${r.owner===M.ME?'（我）':''}</div><span class="yp-muted yp-time">至 ${date(r.end)}</span></div>`).join(''):'<p class="yp-note">暂无有效部门占用</p>'}</div><label for="yp-dept" class="yp-label">本次保护部门</label><input id="yp-dept" class="yp-input" placeholder="自由填写，例如：研发部" value="${escape(s.dept)}" maxlength="50" autocomplete="off"><p class="yp-note">同集团所有关联公司的同一部门一起受保护。</p>`:`<div class="yp-box">保护范围：<strong>整家公司</strong><br>无需填写部门。</div>`}
+        <div id="yp-claim-feedback">${claimFeedback(err,hit,end)}</div></div>`;
+    }
+    function claimFeedback(err,hit,end){const c=M.company(s.selected);return `${err&&!(c?.group&&!s.dept.trim())?`<p class="yp-error" role="alert">${escape(err)}${hit?'：'+escape(hit.owner)+'，至 '+date(hit.end):''}</p>`:''}${hit?.owner===M.ME?`<button type="button" class="yp-link" data-action="renew" data-id="${hit.id}">这是我的黄区，申请二次保护 →</button>`:''}<div class="yp-box">本次占用 <strong>1个名额</strong> · 登记人 <strong>销售甲</strong><br>首次保护至 <strong class="yp-time">${date(end)}</strong></div>${btn('立即登记黄区','claim',err?'disabled':'','yp-primary yp-full')}<p class="yp-note">首次无需审批，保存成功后生效。</p>`;}
+    function claimPage(){main.innerHTML=head('抢黄区','选公司 → 确定范围 → 立即登记',true)+flashHTML()+`<div class="yp-grid"><section class="yp-card"><label for="yp-search" class="yp-label">公司名称</label><input id="yp-search" class="yp-input" type="search" value="${escape(s.query)}" placeholder="输入公司名或简称，例如：示例甲" autocomplete="off"><p class="yp-note">企查查标准名称匹配效果 · 模拟结果</p><div id="yp-results" class="yp-results" aria-label="匹配公司">${resultsHTML()}</div></section><section id="yp-scope" aria-label="保护范围">${scopePanel()}</section></div>`;}
+    function stateBadge(r){if(r.void)return badge('已作废');return M.active(r)?badge(r.second?'二次保护中':'保护中','green'):badge('已过期');}
+    function myPage(){const all=s.records.filter(r=>r.owner===M.ME),visible=all.filter(r=>s.filter==='active'?M.active(r):s.filter==='pending'?!!M.pending(s,r.id):!M.active(r));
+      main.innerHTML=head('我的黄区','二次保护可在有效期内或过期后申请。',true)+flashHTML()+`<div class="yp-tabs" aria-label="黄区筛选">${[['active','有效',all.filter(r=>M.active(r)).length],['pending','待审批',all.filter(r=>M.pending(s,r.id)).length],['history','历史',all.filter(r=>!M.active(r)).length]].map(([k,t,n])=>`<button type="button" data-action="filter" data-filter="${k}" aria-pressed="${s.filter===k}">${t} ${n}</button>`).join('')}</div><div class="yp-card">${visible.length?visible.map(r=>{const q=M.pending(s,r.id);return `<article class="yp-record"><div class="yp-row"><h3>${escape(cName(r))}</h3><div>${stateBadge(r)} ${q?badge('二次保护待审批','amber'):''}</div></div><p class="yp-small yp-muted">${escape(range(r))}</p><div class="yp-row"><span class="yp-small yp-time">${r.void?'历史到期时间':'保护至'} ${date(r.end)}</span><div class="yp-actions">${btn('查看记录','detail',`data-id="${r.id}"`)}${!r.void&&!r.second&&!q?btn('申请二次保护','renew',`data-id="${r.id}"`,'yp-primary'):q?btn('查看申请','renew',`data-id="${r.id}"`):''}</div></div></article>`;}).join(''):'<div class="yp-empty">这里暂无记录</div>'}</div>`;}
+    function recordFacts(r){return `<dl class="yp-dl"><dt>实际公司</dt><dd>${escape(cName(r))}</dd><dt>保护范围</dt><dd>${escape(range(r))}</dd><dt>归属销售</dt><dd>${escape(r.owner)}</dd><dt>首次到期</dt><dd class="yp-time">${date(r.firstEnd)}</dd><dt>当前到期</dt><dd class="yp-time">${date(r.end)}</dd></dl>`;}
+    function renewPage(){const r=s.records.find(x=>x.id===s.panel.id);if(!r){s.panel=null;myPage();return;}const q=M.pending(s,r.id),live=M.active(r);const from=live?r.end:M.NOW;
+      main.innerHTML=`<button type="button" class="yp-link yp-back" data-action="back">← 返回我的黄区</button>`+head(q?'二次保护待审批':'申请二次保护',escape(range(r)))+flashHTML()+`<div class="yp-grid"><section class="yp-card"><div class="yp-row"><h3>当前保护</h3>${stateBadge(r)}</div>${recordFacts(r)}<div class="yp-box">${live?'若在原期限内获批：接原到期日，再保护14天。':'原保护已过期：获批后从批准生效时起保护14天。'}<br>若此刻批准，预计到 <strong>${date(M.addDays(from,14))}</strong></div></section><section class="yp-card">${q?`<h3>申请已提交</h3><p style="margin-top:12px;white-space:pre-wrap">${escape(q.reason)}</p><div class="yp-box">${live?'等待审批期间，原保护继续按原到期时间运行。':'当前仍未受保护，提交申请不会自动恢复占用。'}</div><div class="yp-actions">${btn('切换销售管理员审批','role','','yp-primary')}${btn('撤回申请','withdraw',`data-id="${q.id}"`)}</div>`:`<form id="yp-renew-form"><label class="yp-label" for="yp-reason">申请原因</label><textarea id="yp-reason" class="yp-input" maxlength="500" placeholder="例如：已约好客户下周评估方案，需要继续跟进" required>${escape(draft)}</textarea><div class="yp-box">提交后由销售管理员审批，待审批不会自动延期。批准时再次检查保护范围和有效名额。</div><div id="yp-form-error" role="alert" class="yp-error"></div>${btn('提交二次保护申请','submit-renew','','yp-primary yp-full')}</form>`}</section></div>`;}
+    function detailPage(){const r=s.records.find(x=>x.id===s.panel.id);if(!r){s.panel=null;myPage();return;}const related=s.requests.filter(q=>q.rid===r.id);main.innerHTML=`<button type="button" class="yp-link yp-back" data-action="back">← 返回我的黄区</button>`+head('黄区记录',escape(cName(r)))+flashHTML()+`<div class="yp-grid"><section class="yp-card"><div class="yp-row"><h3>保护信息</h3>${stateBadge(r)}</div>${recordFacts(r)}${!r.void&&!r.second?btn(M.pending(s,r.id)?'查看二次保护申请':'申请二次保护','renew',`data-id="${r.id}"`,'yp-primary'):''}<hr class="yp-rule"><h3>操作记录</h3><div class="yp-log">${r.logs.map(l=>`<p>${escape(l)}</p>`).join('')}</div>${related.length?`<hr class="yp-rule"><h3>续保审批</h3>${related.map(q=>`<div class="yp-box">${escape(q.reason)}<br><strong>${({pending:'待审批',approved:'已批准',rejected:'已驳回',withdrawn:'已撤回'})[q.status]}</strong>${q.note?' · '+escape(q.note):''}${q.until?'<br>续保至 '+date(q.until):''}</div>`).join('')}`:''}</section><section class="yp-card"><h3>作废本次黄区</h3>${r.void?'<div class="yp-box">记录已作废，保留在历史中。</div>':`<p class="yp-note">作废后解除当前占用，原记录及审批历史保留。</p><label for="yp-void-reason" class="yp-label" style="margin-top:16px">作废原因</label><textarea id="yp-void-reason" class="yp-input" placeholder="例如：本次保护范围登记有误" maxlength="300"></textarea><div id="yp-form-error" role="alert" class="yp-error"></div>${btn('确认作废并保留记录','void',`data-id="${r.id}"`,'yp-danger')}`}</section></div>`;}
+    function approvalsPage(){const list=s.requests.filter(q=>s.adminFilter==='pending'?q.status==='pending':q.status!=='pending');main.innerHTML=head('审批中心','批准前复核保护范围和名额；到期时间按批准生效时计算。')+flashHTML()+`<div class="yp-tabs"><button type="button" data-action="admin-filter" data-filter="pending" aria-pressed="${s.adminFilter==='pending'}">待审批 ${s.requests.filter(q=>q.status==='pending').length}</button><button type="button" data-action="admin-filter" data-filter="done" aria-pressed="${s.adminFilter==='done'}">已处理</button></div><div class="yp-card">${list.length?list.map(q=>{const r=s.records.find(x=>x.id===q.rid);return `<article class="yp-record"><div class="yp-row"><h3>${escape(range(r))}</h3>${badge(({pending:'待审批',approved:'已批准',rejected:'已驳回',withdrawn:'已撤回'})[q.status],q.status==='pending'?'amber':q.status==='approved'?'green':'')}</div><p class="yp-small yp-muted">${escape(r.owner)}申请 · 首次到期 ${date(r.firstEnd)} ${!M.active(r)&&!r.void?'· 当前已过期':''}</p><p class="yp-small">${escape(q.reason)}</p><div class="yp-row"><span class="yp-small yp-muted">${q.status==='pending'?'申请不会自动占用名额':q.note||'审批结果已同步至销售'}</span>${btn(q.status==='pending'?'查看并审批':'查看结果','review',`data-id="${q.id}"`,q.status==='pending'?'yp-primary':'')}</div></article>`;}).join(''):'<div class="yp-empty">申请已处理完毕</div>'}</div>`;}
+    function reviewPage(){const q=s.requests.find(x=>x.id===s.panel.id),r=s.records.find(x=>x.id===q?.rid);if(!r){s.panel=null;approvalsPage();return;}const live=M.active(r),from=live?r.end:M.NOW,err=q.status==='pending'?M.approvalBlock(s,q):'';
+      main.innerHTML=`<button type="button" class="yp-link yp-back" data-action="back">← 返回审批中心</button>`+head(q.status==='pending'?'审批二次保护':'审批结果',escape(r.owner)+' · '+escape(range(r)))+flashHTML()+`<div class="yp-grid"><section class="yp-card"><h3>申请信息</h3>${recordFacts(r)}<hr class="yp-rule"><p class="yp-small yp-muted">申请原因</p><p style="margin-top:7px;white-space:pre-wrap">${escape(q.reason)}</p></section><section class="yp-card">${q.status==='pending'?`<h3>批准后的变化</h3><dl class="yp-dl"><dt>当前状态</dt><dd>${live?'首次保护有效':'首次已过期'}</dd><dt>计时起点</dt><dd>${live?'接原到期日':'批准生效时'} · ${date(from)}</dd><dt>新到期日</dt><dd><strong>${date(M.addDays(from,14))}</strong></dd><dt>有效名额</dt><dd>${M.count(s,r.owner)} / 15 → ${M.count(s,r.owner)+(live?0:1)} / 15</dd></dl>${err?`<div class="yp-error" role="alert">不能批准：${escape(err)}</div>`:`<div class="yp-box">${live?'延长原记录，名额不增加。':'批准后重新占1个名额，空档期不追溯保护。'}</div>`}<label class="yp-label" for="yp-approval-note">审批意见 <span class="yp-muted yp-small">批准选填，驳回必填</span></label><textarea id="yp-approval-note" class="yp-input" maxlength="400" placeholder="填写审批意见">${escape(draft)}</textarea><div id="yp-form-error" role="alert" class="yp-error"></div><div class="yp-actions" style="margin-top:12px">${btn('批准 · 延长14天','approve',`data-id="${q.id}" ${err?'disabled':''}`,'yp-primary')}${btn('驳回申请','reject',`data-id="${q.id}"`,'yp-danger')}</div>`:`${badge(({approved:'已批准',rejected:'已驳回',withdrawn:'已撤回'})[q.status],q.status==='approved'?'green':'')}<div class="yp-box">${q.status==='approved'?`计时方式：${escape(q.rule)}<br>新到期日：<strong>${date(q.until)}</strong>`:'本次操作未延长保护期限。'}${q.note?'<br>审批意见：'+escape(q.note):''}</div>${btn('切换销售查看','role','','yp-primary')}`}</section></div>`;
+    }
+    function render(){nav();if(s.panel?.type==='renew')renewPage();else if(s.panel?.type==='detail')detailPage();else if(s.panel?.type==='review')reviewPage();else if(s.role==='manager')approvalsPage();else if(s.page==='mine')myPage();else claimPage();root.querySelector('#yp-demo-actions').innerHTML=`${btn('填满销售甲的15个名额','demo-quota')}${btn(s.race?'已开启：下次提交被抢':'模拟下次提交瞬间被抢','demo-race',`aria-pressed="${s.race}"`)}${btn(s.approvalRace?'已开启：过期续保被抢':'模拟过期续保审批时被抢','demo-approval-race',`aria-pressed="${s.approvalRace}"`)}${btn('重置模拟数据','reset')}`;}
+    root.addEventListener('input',e=>{if(e.target.id==='yp-search'){s.query=e.target.value;s.selected=null;s.dept='';s.flash=null;root.querySelector('#yp-results').innerHTML=resultsHTML();root.querySelector('#yp-scope').innerHTML=scopePanel();root.querySelector('.yp-alert')?.remove();}else if(e.target.id==='yp-dept'){s.dept=e.target.value;root.querySelector('#yp-claim-feedback').innerHTML=claimFeedback(M.eligible(s,s.selected,s.dept),M.conflict(s,s.selected,s.dept),M.addDays(M.NOW,14));}else if(e.target.id==='yp-reason'||e.target.id==='yp-approval-note')draft=e.target.value;});
+    root.addEventListener('submit',e=>e.preventDefault());
+    root.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.id==='yp-dept'){e.preventDefault();root.querySelector('[data-action=claim]')?.click();}});
+    root.addEventListener('click',e=>{const b=e.target.closest('[data-action]');if(!b||b.disabled)return;const a=b.dataset.action,id=b.dataset.id;s.flash=null;
+      if(a==='nav'){s.page=b.dataset.page;s.panel=null;draft='';}
+      else if(a==='role'){s.role=s.role==='sales'?'manager':'sales';s.page=s.role==='sales'?'mine':'approvals';s.panel=null;s.filter='active';s.adminFilter='pending';draft='';}
+      else if(a==='select-company'){s.selected=id;s.dept='';}
+      else if(a==='claim'){if(s.role!=='sales')return;const out=M.claim(s,s.selected,s.dept);if(out.error)flash(out.error,true);else flash('登记成功，已为你保留至 '+date(out.record.end)+'。',false,out.record.id);}
+      else if(a==='filter'){s.filter=b.dataset.filter;s.panel=null;}
+      else if(a==='admin-filter'){s.adminFilter=b.dataset.filter;}
+      else if(a==='renew'||a==='detail'){if(s.role!=='sales')return;s.page='mine';s.panel={type:a,id};draft='';}
+      else if(a==='review'){if(s.role!=='manager')return;s.panel={type:'review',id};draft='';}
+      else if(a==='back'){s.panel=null;draft='';}
+      else if(a==='submit-renew'){const out=M.request(s,s.panel.id,root.querySelector('#yp-reason').value);if(out.error){root.querySelector('#yp-form-error').textContent=out.error;return;}flash('申请已提交，等待销售管理员审批。');draft='';}
+      else if(a==='withdraw'){const out=M.withdraw(s,id);if(out.error)flash(out.error,true);else {flash('已撤回续保申请，首次保护期限不变。');s.panel=null;s.filter='active';}}
+      else if(a==='approve'||a==='reject'){const out=M.decide(s,id,a==='approve',root.querySelector('#yp-approval-note').value);if(out.error)flash(out.error,true);else flash(a==='approve'?'已批准，销售端的到期日已同步更新。':'已驳回，意见已同步给销售。');}
+      else if(a==='void'){const out=M.voidRecord(s,id,root.querySelector('#yp-void-reason').value);if(out.error){root.querySelector('#yp-form-error').textContent=out.error;return;}flash('已作废并解除占用，记录保留在历史中。');}
+      else if(a==='demo-quota'){M.fillQuota(s);flash('已加入模拟占位记录，销售甲当前15/15。');}
+      else if(a==='demo-race'){s.race=!s.race;flash(s.race?'下次有效登记将模拟被他人抢先。':'已关闭抢单冲突模拟。');}
+      else if(a==='demo-approval-race'){s.approvalRace=!s.approvalRace;flash(s.approvalRace?'下次批准已过期续保时，将模拟被他人占用。':'已关闭审批冲突模拟。');}
+      else if(a==='reset'){s=M.seed();draft='';}
+      render();if(a==='select-company'){(root.querySelector('#yp-dept')||root.querySelector('[data-action=claim]'))?.focus();}persist();
+    });
+    render();
+  })();
+  </script>
+</div>
+</body></html>
