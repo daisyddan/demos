@@ -1,0 +1,599 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>FBIF 采购对接站 · 运行逻辑、数据流向与风险全景图</title>
+  <style>
+    * { box-sizing: border-box; }
+    :root {
+      color-scheme: light dark;
+      --foreground: #1d2733;
+      --muted-foreground: #52606e;
+      --background: #ffffff;
+      --surface: #f7f9fb;
+      --border: #d2dce3;
+      --blue: #4C82D9;
+      --green: #2f8564;
+      --purple: #7858a6;
+      --orange: #b86c35;
+      --yellow: #b47b1e;
+      --danger: #c64343;
+      --font-size-base: 15px;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --foreground: #e6edf3;
+        --muted-foreground: #9aa7b4;
+        --background: #11161c;
+        --surface: #171e26;
+        --border: #2c3743;
+        --blue: #6b9ce8;
+        --green: #4ba884;
+        --purple: #9d7fd1;
+        --orange: #d98c55;
+        --yellow: #d9a03d;
+        --danger: #e26a6a;
+      }
+    }
+    body {
+      margin: 0 auto;
+      padding: 28px 24px 48px;
+      max-width: 1440px;
+      background: var(--background);
+      color: var(--foreground);
+      font-family: "Inter Variable", "Inter", "Noto Sans SC Variable", "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+      font-size: var(--font-size-base);
+      line-height: 1.6;
+      font-synthesis: none;
+      -webkit-font-smoothing: antialiased;
+    }
+    h1, h2, h3, p { margin: 0; }
+    h1 {
+      font-size: 1.55rem;
+      font-weight: 700;
+      line-height: 1.3;
+      text-wrap: balance;
+    }
+    .text-muted { color: var(--muted-foreground); }
+    .text-small { font-size: 0.9rem; }
+    .status-note {
+      color: var(--muted-foreground);
+      margin: 0 0 18px;
+      padding: 8px 12px;
+      border-left: 3px solid var(--blue);
+      background: color-mix(in srgb, var(--blue) 7%, var(--background));
+      border-radius: 0 6px 6px 0;
+      font-size: 0.9rem;
+    }
+    #channel-process-map { color: var(--foreground); }
+    #channel-process-map .map-title {
+      margin-bottom: 20px;
+    }
+    #channel-process-map .map-title p {
+      margin-top: 6px;
+      text-wrap: pretty;
+    }
+    #channel-process-map .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px 20px;
+      margin-top: 12px;
+    }
+    #channel-process-map .legend span {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+    }
+    #channel-process-map .legend i {
+      width: 9px;
+      height: 9px;
+      display: inline-block;
+      border-radius: 50%;
+    }
+    #channel-process-map .legend .warn-dot {
+      border-radius: 2px;
+    }
+    #channel-process-map .process-drawing {
+      display: block;
+      width: 100%;
+      overflow: visible;
+    }
+    #channel-process-map .process-drawing text {
+      fill: var(--foreground);
+      font-family: inherit;
+    }
+    #channel-process-map .process-drawing .strong { font-weight: 600; }
+    #channel-process-map .process-drawing .quiet { fill: var(--muted-foreground); }
+    #channel-process-map .process-drawing .connector {
+      fill: none;
+      stroke: color-mix(in srgb, var(--foreground) 34%, var(--background));
+      stroke-width: 1.3;
+    }
+    #channel-process-map .process-drawing .node {
+      stroke: color-mix(in srgb, var(--foreground) 16%, var(--background));
+      stroke-width: 1;
+    }
+    #channel-process-map .process-drawing .node-notice {
+      stroke: color-mix(in srgb, var(--yellow) 62%, var(--border));
+      stroke-width: 1.25;
+      stroke-dasharray: 4 3;
+    }
+    #channel-process-map .supporting {
+      margin-top: 26px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border);
+    }
+    #channel-process-map .supporting-head {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+    #channel-process-map details {
+      margin-top: 10px;
+      padding: 10px 14px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--surface);
+    }
+    #channel-process-map details summary {
+      font-weight: 600;
+      cursor: pointer;
+      list-style-position: outside;
+    }
+    #channel-process-map details p,
+    #channel-process-map details ul {
+      margin: 10px 0 2px;
+      padding-left: 20px;
+      text-wrap: pretty;
+    }
+    #channel-process-map details p {
+      padding-left: 0;
+    }
+    #channel-process-map details li {
+      margin-bottom: 6px;
+    }
+    #channel-process-map .risk-tag {
+      display: inline-block;
+      padding: 1px 6px;
+      margin-right: 6px;
+      border-radius: 4px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      vertical-align: baseline;
+    }
+    #channel-process-map .risk-high {
+      background: color-mix(in srgb, var(--danger) 14%, var(--background));
+      color: var(--danger);
+    }
+    #channel-process-map .risk-mid {
+      background: color-mix(in srgb, var(--yellow) 16%, var(--background));
+      color: var(--yellow);
+    }
+    #channel-process-map .risk-low {
+      background: color-mix(in srgb, var(--blue) 14%, var(--background));
+      color: var(--blue);
+    }
+    @media (max-width: 610px) {
+      body { padding: 14px 12px 32px; }
+    }
+  </style>
+</head>
+<body>
+  <p class="status-note">评估口径：基于 2026-11-24 线上代码与发布记录梳理，展示系统运行逻辑、数据流向与当前已识别的短板及阻塞点（示例数据均为虚构）。</p>
+
+  <div id="channel-process-map">
+    <div class="map-title">
+      <h1>FBIF 采购对接站 · 项目运行逻辑与数据流向</h1>
+      <p class="text-small text-muted">从上往下看 5 大运转阶段，从左往右看执行步骤；琥珀色虚线框标注当前已知短板与待打通卡点</p>
+      <div class="legend text-small" aria-label="阶段颜色说明">
+        <span><i style="background:var(--blue)"></i>数据底座与发布门禁</span>
+        <span><i style="background:var(--green)"></i>前台检索与选品</span>
+        <span><i style="background:var(--orange)"></i>采购对接与微信撮合</span>
+        <span><i style="background:var(--purple)"></i>企业投稿与后台审核</span>
+        <span><i class="warn-dot" style="background:var(--yellow)"></i>当前短板 / 阻塞风险</span>
+      </div>
+    </div>
+
+    <svg class="process-drawing" role="img" aria-label="FBIF 采购对接站完整运行逻辑与数据流向图：包含数据底座与目录拼装、前台找供应商与权限分级、采购对接与飞书转微信撮合、供应商投稿与统一审核、以及代码协作与自助门禁发布五大横向阶段，并标注了关键短板与阻塞节点。"></svg>
+
+    <div class="supporting">
+      <div class="supporting-head">按需展开细节</div>
+
+      <details open>
+        <summary>一、当前最需要关注的短板与风险（按优先级排序）</summary>
+        <ul>
+          <li><span class="risk-tag risk-high">高危阻塞</span><strong>业务目录缺少「增量数据发布入口」与全量渠道级核准关系：</strong>当前商品图文精准替换候选代码与合成压测已完成，但生产环境只有「空库首次导入」机制，无法向已有生效目录增量更新；同时缺少覆盖全量主表的「企业—商品—渠道—角色」已核准关系清单，图片资产清单硬上限仍为 5,000 路径 / 单图 2 MiB，尚未按真实全表核算。</li>
+          <li><span class="risk-tag risk-high">高危阻塞</span><strong>渠道新品定时自动同步仍待主机切换启用：</strong>原有代码托管侧同步入口已永久下线，新架构改为阿里云主机每日 09:00 沙箱同步，但配置文件与近期记录均显示定时任务处于暂停或待批准切换状态；若主机未正式开启，新品库渠道数据会停滞更新。且灾难恢复备份不存渠道图缓存，恢复后须重跑全量飞书同步。</li>
+          <li><span class="risk-tag risk-mid">中危架构</span><strong>分类维护服务与主站分裂：</strong>分类维护页面及接口实际由独立受保护服务托管，主站发布包覆盖不到该服务，导致外部修改飞书分类后的同步修复长期挂起、无法随主站落地。</li>
+          <li><span class="risk-tag risk-mid">中危运维</span><strong>发布链路脆弱与单点人力依赖：</strong>近期 20 次自助确认发布记录中仅 4 次成功、16 次失败（集中卡在上传时限、原生库备份元数据延迟、发布锁与网络刷新竞争等环节）；近期几乎全部排错与上线均由单人完成，且缺少共享测试预览环境，同事改动难以独立端到端验收。</li>
+          <li><span class="risk-tag risk-mid">中危业务</span><strong>部分历史需求悬置与功能收口未明：</strong>采购对接群卡片与固定人员名单对齐改动长期搁置无评审；「采购工作台」已双端关闭，采购方暂不能主动发长期招标需求；商品主图程序只能核验哈希与主表绑定，无法自动识别图片内容是否货真价实。</li>
+          <li><span class="risk-tag risk-low">低危债务</span><strong>工程与文档债务累积：</strong>自述文档落后线上进度约 1 个月；前端缺少代码静态检查配置导致 lint 命令无法启动；远端残留超 110 个历史分支与近百篇过程文档；单机本地备份空间曾触达 4 GiB 上限（现已扩至 8 GiB）。</li>
+        </ul>
+      </details>
+
+      <details>
+        <summary>二、四层数据边界：代码库、数据库、私有对象存储与飞书各自管什么</summary>
+        <ul>
+          <li><strong>代码仓库（GitHub）：</strong>严格只保存应用源码、部署控制程序与合成测试数据；自动边界门禁拦截任何真实业务快照、企业附件与访问密钥。</li>
+          <li><strong>关系数据库（阿里云加密 RDS）：</strong>保存账号权限、企业资料与核名记录、新品投稿、收藏清单、采购对接单、审核日志以及目录 / 渠道快照指针；写入采用版本乐观锁并在更新前自动留存历史备份。</li>
+          <li><strong>私有对象存储（阿里云 OSS）：</strong>保存企业上传的资料原件、服务端转换出的逐页预览图、不可变渠道快照 JSON 与商品 WebP 图片；仅开放按前缀私有读写、禁止覆盖且不授删除权限。</li>
+          <li><strong>飞书多维表格与群聊：</strong>既是内部渠道新品的权威拉取源，也是企业过审新品的单向台账归档地，同时承接采购对接的群进度卡片与负责人私聊派单。</li>
+        </ul>
+      </details>
+
+      <details>
+        <summary>三、权限与隐私防线：不同角色能看到什么、不能做什么</summary>
+        <ul>
+          <li><strong>游客：</strong>仅能看到逐字段白名单过滤后的公开企业目录、品类、品牌、渠道、已审核关联，以及明确带游客授权标记的附件预览；不返回商品图文、内部审核备注、历史未授权附件与原件下载链接。</li>
+          <li><strong>已登录普通会员：</strong>解锁历史已发布企业资料的弹窗逐页预览、个人收藏对比、发起采购对接、浏览新品库完整内容；附件原件仍禁止公开下载，站内不回显任何微信或电话联系方式。</li>
+          <li><strong>已核验企业员工 / 投稿人：</strong>可为任意企业提交企业资料（新增企业须人工核名）；通过企业任职关联核验后可提交和管理本人负责的企业系列新品，同企业其他同事不可看私人草稿；改版重审期间前台继续展示旧版。</li>
+          <li><strong>平台管理员 / 审核员：</strong>拥有统一审核中心、企业管理、对接处理、账号启停、搜索热词监控与「普通用户界面预览」权限；退回与拒绝强制记录原因，支持撤回与操作审计。</li>
+        </ul>
+      </details>
+
+      <details>
+        <summary>四、虚构示例：一家品牌从入库到完成采购对接的全过程</summary>
+        <ul>
+          <li><strong>1. 入库与展示：</strong>「示例食品有限公司」员工通过任职核验后，在供应商工作台提交「清萃果茶（示例）」3 个口味规格与产品手册；管理员在统一审核中心通过后，手册自动转为防下载逐页预览，新品同时出现在新品库与企业详情，并单向写入飞书新品台账。</li>
+          <li><strong>2. 选品与比对：</strong>某零售渠道采购员登录网站，在「找供应商」按品类与渠道筛出 3 家候选企业，加入个人收藏矩阵对比后，勾选其中 2 家发起对接，留下需求说明和自己的微信号。</li>
+          <li><strong>3. 派单与转微信：</strong>系统自动向飞书销售群发送脱敏进度卡片（不含微信号），同时向对应负责同事私聊推送含微信号的卡片；同事离线加微信核实并安排双方建联后，在飞书卡片点「已转微信」，全流程闭环留痕。</li>
+        </ul>
+      </details>
+    </div>
+
+    <script>
+      (() => {
+        const root = document.getElementById('channel-process-map');
+        const svg = root.querySelector('.process-drawing');
+        const ns = 'http://www.w3.org/2000/svg';
+        const measure = document.createElement('canvas').getContext('2d');
+
+        const phases = [
+          {
+            name: '底座',
+            who: '系统与云端存储 · 阿里云 RDS / 私有 OSS / 飞书源表',
+            color: '--blue',
+            steps: [
+              {
+                title: '1. 四层权威数据分工',
+                nodes: [
+                  { title: '加密 RDS：业务记录与指针', lines: ['账号、审核、投稿、对接、收藏', '版本乐观锁 + 写前自动留备份'] },
+                  { title: '私有 OSS：文件与不可变快照', lines: ['手册原件、逐页图、渠道快照', '私有读写，禁止覆盖，无删除权'] },
+                  { title: '飞书源表 & 纯代码仓库', lines: ['飞书管渠道源表与新品台账', '仓库零真实数据，边界门禁拦截'] }
+                ]
+              },
+              {
+                title: '2. 渠道新品定时同步',
+                nodes: [
+                  { title: '阿里云主机沙箱定时拉取', lines: ['读内部飞书渠道主表', '解码转 WebP 写 OSS，切 RDS 指针'] },
+                  { title: '短板：自动同步待正式开启', lines: ['旧同步入口已永久停用', '主机定时任务标为待切换启用', '灾备不存图缓存，恢复须重同步'], kind: 'notice' }
+                ]
+              },
+              {
+                title: '3. 同版本目录实时拼装',
+                nodes: [
+                  { title: '多源叠加生成线上目录', lines: ['基础快照 + 分类发布 + 公开范围', '叠加货架树、品牌与过审渠道品'] },
+                  { title: '短板：图文升级缺增量入口', lines: ['现有导入仅支持空库首次暂存', '缺全量渠道级核准角色清单', '资产上限 5,000 路径待扩容评估'], kind: 'notice' }
+                ]
+              }
+            ],
+            note: '核心原则：业务资料与图片全部留在阿里云；每次页面读数在同一版本上下文下拼装，避免缓存错位或泄露未过审记录。'
+          },
+          {
+            name: '选品',
+            who: '游客 / 注册采购方 · 找供应商、新品库与个人收藏',
+            color: '--green',
+            steps: [
+              {
+                title: '1. 多维找厂与看新品',
+                nodes: [
+                  { title: '找供应商与目录检索', lines: ['按关键词、品类、渠道、品牌筛选', '支持代工专题与相关企业推荐'] },
+                  { title: '新品库双通道浏览', lines: ['渠道上新：来自飞书渠道同步', '供应商上新：来自企业投稿过审'] }
+                ]
+              },
+              {
+                title: '2. 前后端统一权限分级',
+                nodes: [
+                  { title: '游客：严格白名单字段', lines: ['可看公开目录与授权附件预览', '不返商品图文、内部备注与原件'] },
+                  { title: '登录会员：解锁完整目录', lines: ['可看历史资料预览与代表图文', '依然禁止下载企业手册原件'] }
+                ],
+                branch: true
+              },
+              {
+                title: '3. 手册预览与收藏对比',
+                nodes: [
+                  { title: '独立渲染防泄密阅读', lines: ['PDF / Office 服务端转逐页图片', '支持缩略页、缩放与弹窗阅读'] },
+                  { title: '个人私密收藏清单', lines: ['仅本人可见，支持多企矩阵对比', '支持批量移除、撤销与一键对接'] }
+                ]
+              }
+            ],
+            note: '前后端共用同一套字段过滤清单，避免仅在页面隐藏按钮；「采购工作台」入口当前已双端关闭，仅保留后台历史记录。'
+          },
+          {
+            name: '对接',
+            who: '采购申请人发起 · 飞书群与私聊分流 · 同事线下转微信',
+            color: '--orange',
+            steps: [
+              {
+                title: '1. 发起一对多对接申请',
+                nodes: [
+                  { title: '多入口带入目标企业', lines: ['企业详情、新品页、收藏页均可用', '一份需求可同时勾选多家企业'] },
+                  { title: '填写需求与个人微信号', lines: ['站内不展示供应商联系方式', '提交后网站绝不回显微信号'] }
+                ]
+              },
+              {
+                title: '2. 自动派单与脱敏发卡',
+                nodes: [
+                  { title: '飞书群卡片：只看需求进度', lines: ['展示需求概要、目标企业与状态', '群卡片彻底脱敏，不含微信号'] },
+                  { title: '负责人私聊卡片：带微信号', lines: ['企业规则优先、品类其次、协调兜底', '仅私聊分配给负责同事跟进'] }
+                ],
+                branch: true
+              },
+              {
+                title: '3. 飞书流转与确认闭环',
+                nodes: [
+                  { title: '卡片认领、审核与转交', lines: ['并发受版本锁控制防重复处理', '修改需求仅未完成企业重审'] },
+                  { title: '确认「已转微信」才算完成', lines: ['须处理人明确确认已加微信撮合', '反馈评价自动提醒负责同事'] },
+                  { title: '短板：群卡片改动长期悬置', lines: ['部分固定名单与原型对齐待决策', '转微信后成单转化缺站内追踪'], kind: 'notice' }
+                ],
+                branchAfterFirst: true
+              }
+            ],
+            note: '消息投递与业务保存解耦，支持后台退避重试与回调验签；历史无微信确认的旧单标为「已结束」，不冒充已转微信。'
+          },
+          {
+            name: '供稿',
+            who: '供应商 / 投稿人提交 · 平台管理员后台把关',
+            color: '--purple',
+            steps: [
+              {
+                title: '1. 企业资料与新品投稿',
+                nodes: [
+                  { title: '提交企业资料与产品手册', lines: ['可为任意企业补充公开资料', '新增企业强制进入人工核名'] },
+                  { title: '提交企业系列新品', lines: ['须先通过企业任职关联核验', '支持多口味规格；未核验存草稿'] }
+                ],
+                branch: true
+              },
+              {
+                title: '2. 统一审核中心把关',
+                nodes: [
+                  { title: '审核通过：即时发布上线', lines: ['已发布改版重审期间保留旧版', '首次收录时间与访问地址稳定'] },
+                  { title: '退回补充 / 不予收录', lines: ['必须写明具体原因并通知投稿人', '支持审核撤回与完整处理留痕'] }
+                ],
+                branch: true
+              },
+              {
+                title: '3. 站内回显与后台治理',
+                nodes: [
+                  { title: '新品双端展示 + 写飞书台账', lines: ['回显于新品库与企业详情页', '按稳定编号单向写入飞书新品表'] },
+                  { title: '后台巡检与用户视角预览', lines: ['账号分权、搜索热词、备份监控', '管理员可切普通用户视角核验'] },
+                  { title: '短板：分类维护跨服务分裂', lines: ['分类工作台跑在独立受保护服务', '主站发布无法覆盖，同步修复挂起'], kind: 'notice' }
+                ]
+              }
+            ],
+            note: '投稿人仅管理本人稿件，同企业同事不可看私人草稿；图片程序仅校验绑定与摘要，图文内容真实性仍需人工抽检。'
+          },
+          {
+            name: '发布',
+            who: '产研提 PR · 自动门禁检查 · 授权人自助上线',
+            color: '--blue',
+            steps: [
+              {
+                title: '1. 提 PR 与全量自动校验',
+                nodes: [
+                  { title: '独立分支开发 + 合成测试', lines: ['400 份测试 + 数据边界门禁', '实际编译运行包与接口验收'] },
+                  { title: '短板：工程与预览环境债务', lines: ['缺共享测试站与 ESLint 配置', '超 110 个历史分支与过期文档'], kind: 'notice' }
+                ]
+              },
+              {
+                title: '2. 授权人触发「确认发布」',
+                nodes: [
+                  { title: '短期身份凭据校验发布人', lines: ['绑定数字账号 ID 与精确版本号', '无需交出服务器密码或长期密钥'] },
+                  { title: '纯净环境封存并暂存 OSS', lines: ['按锁定基线重新构建与封存', '校验文件摘要后上传私有暂存区'] }
+                ]
+              },
+              {
+                title: '3. 主机持锁验收与切换',
+                nodes: [
+                  { title: '核验原生库备份 + 沙箱实跑', lines: ['持全局发布锁防并发覆盖', '独立网络只读视图验证页面接口'] },
+                  { title: '成功：原子切换上线', lines: ['切流量至新版，核验线上页面'] },
+                  { title: '失败：自动回退旧进程', lines: ['保留脱敏诊断，不回滚业务库'] },
+                  { title: '短板：发布脆弱与单点依赖', lines: ['近期 20 次发布 16 次失败', '新数据键易触发备份白名单拦截', '核心排错发布过度集中于单人'], kind: 'notice' }
+                ],
+                branchAfterFirst: true
+              }
+            ],
+            note: '高强度防御保障了生产安全，但也抬高了日常发版与字段扩展门槛；建议优先打通增量数据发布与共享预发环境。'
+          }
+        ];
+
+        function el(name, attrs = {}, parent = svg) {
+          const n = document.createElementNS(ns, name);
+          Object.entries(attrs).forEach(([k, v]) => n.setAttribute(k, String(v)));
+          parent.appendChild(n);
+          return n;
+        }
+        function escText(parent, text, x, y, cls = '', anchor = 'start') {
+          const n = el('text', { x, y, class: cls, 'text-anchor': anchor }, parent);
+          n.textContent = text;
+          return n;
+        }
+
+        let font, line, family, compact;
+        function wrap(text, width) {
+          measure.font = `400 ${font}px ${family}`;
+          const out = [];
+          let current = '';
+          for (const char of text) {
+            if (current && measure.measureText(current + char).width > width) {
+              out.push(current);
+              current = char;
+            } else {
+              current += char;
+            }
+          }
+          if (current) out.push(current);
+          return out;
+        }
+        function nodeSize(node, w) {
+          const titles = wrap(node.title, w - 24);
+          const lines = node.lines.flatMap(t => wrap(t, w - 24));
+          return {
+            titles,
+            lines,
+            h: 22 + line * (titles.length + lines.length) + (lines.length ? 5 : 0)
+          };
+        }
+        function box(node, x, y, w, color) {
+          const m = nodeSize(node, w);
+          const g = el('g');
+          const isNotice = node.kind === 'notice';
+          const tone = isNotice ? '--yellow' : color;
+          el('rect', {
+            x, y, width: w, height: m.h, rx: 6,
+            class: isNotice ? 'node-notice' : 'node',
+            fill: `color-mix(in srgb, var(${tone}) ${isNotice ? 14 : 9}%, var(--background))`
+          }, g);
+          let baseline = y + 11 + font;
+          m.titles.forEach(t => {
+            escText(g, t, x + w / 2, baseline, 'strong', 'middle');
+            baseline += line;
+          });
+          if (m.lines.length) baseline += 5;
+          m.lines.forEach(t => {
+            escText(g, t, x + w / 2, baseline, '', 'middle');
+            baseline += line;
+          });
+          return m.h;
+        }
+        function arrow(d, both = false) {
+          return el('path', {
+            d,
+            class: 'connector',
+            'marker-end': 'url(#process-arrow)',
+            ...(both ? { 'marker-start': 'url(#process-arrow-start)' } : {})
+          });
+        }
+        function header(x, y, w, h, title, color, idx) {
+          const notch = compact ? 0 : 12;
+          const d = `M${x} ${y}H${x + w - notch}L${x + w} ${y + h / 2}L${x + w - notch} ${y + h}H${x}L${x + notch} ${y + h / 2}Z`;
+          el('path', {
+            d,
+            fill: `color-mix(in srgb, var(${color}) ${15 + idx * 7}%, var(--background))`,
+            stroke: `color-mix(in srgb, var(${color}) 55%, var(--border))`,
+            'stroke-width': 1.2
+          });
+          const lines = wrap(title, w - 34);
+          const first = y + h / 2 - (lines.length - 1) * line / 2 + font * 0.35;
+          lines.forEach((t, i) => escText(svg, t, x + w / 2, first + i * line, 'strong', 'middle'));
+        }
+
+        function paint() {
+          const w = Math.max(280, Math.floor(root.clientWidth));
+          const style = getComputedStyle(root);
+          font = parseFloat(style.fontSize) || 14;
+          line = font * 1.48;
+          family = style.fontFamily;
+          compact = w < 700;
+          svg.replaceChildren();
+
+          const title = el('title');
+          title.textContent = 'FBIF 采购对接站运行逻辑、数据流向与短板风险全景流程图';
+          const defs = el('defs');
+          for (const [id, orient] of [['process-arrow', 'auto'], ['process-arrow-start', 'auto-start-reverse']]) {
+            const marker = el('marker', {
+              id, orient, markerUnits: 'userSpaceOnUse',
+              refX: 7, refY: 4, markerWidth: 9, markerHeight: 8
+            }, defs);
+            el('path', {
+              d: 'M1 1L7 4L1 7', fill: 'none', stroke: 'context-stroke', 'stroke-width': 1.3
+            }, marker);
+          }
+
+          let y = 4;
+          phases.forEach((phase, phaseIndex) => {
+            const labelH = line + 12;
+            el('rect', { x: 0, y: y + 3, width: 5, height: font + 5, rx: 2, fill: `var(${phase.color})` });
+            escText(svg, phase.name, 14, y + font + 4, 'strong');
+            const captionX = 14 + font * 2 + 18;
+            const captionLines = wrap(phase.who, w - captionX - 6);
+            captionLines.forEach((t, i) => escText(svg, t, captionX, y + font + 4 + i * line, 'quiet'));
+            y += Math.max(labelH, captionLines.length * line + 12);
+
+            const cols = compact ? 1 : phase.steps.length;
+            const gap = compact ? 0 : 12;
+            const colW = (w - gap * (cols - 1)) / cols;
+            let maxBottom = y;
+
+            phase.steps.forEach((step, i) => {
+              const x = compact ? 0 : i * (colW + gap);
+              const sy = compact ? maxBottom : y;
+              const titleLines = wrap(step.title, colW - 34);
+              const hh = Math.max(42, titleLines.length * line + 16);
+              header(x, sy, colW, hh, step.title, phase.color, i);
+
+              const nx = x + 18;
+              const nw = colW - 24;
+              let ny = sy + hh + 22;
+              let prevBottom = sy + hh;
+              const branchX = x + 7;
+              let branchY = sy + hh + 5;
+
+              step.nodes.forEach((node, ni) => {
+                if (step.branch || (step.branchAfterFirst && ni > 0)) {
+                  const nm = nodeSize(node, nw);
+                  if (step.branchAfterFirst && ni === 1) {
+                    el('path', {
+                      d: `M${nx + nw / 2} ${prevBottom + 5}V${prevBottom + 11}H${branchX}V${ny + nm.h / 2}`,
+                      class: 'connector'
+                    });
+                  } else {
+                    el('path', { d: `M${branchX} ${branchY}V${ny + nm.h / 2}`, class: 'connector' });
+                  }
+                  arrow(`M${branchX} ${ny + nm.h / 2}H${nx - 5}`);
+                  branchY = ny + nm.h / 2;
+                } else {
+                  arrow(`M${nx + nw / 2} ${prevBottom + 5}V${ny - 6}`, Boolean(step.bidirectional && ni > 0));
+                }
+                const height = box(node, nx, ny, nw, phase.color);
+                prevBottom = ny + height;
+                ny = prevBottom + 18;
+              });
+
+              maxBottom = Math.max(maxBottom, prevBottom + 16);
+              if (compact) maxBottom += 12;
+            });
+
+            y = maxBottom;
+            const noteLines = wrap(phase.note, w - 24);
+            const noteH = noteLines.length * line + 18;
+            el('rect', {
+              x: 0, y, width: w, height: noteH, rx: 5,
+              fill: `color-mix(in srgb, var(${phase.color}) 7%, var(--background))`
+            });
+            noteLines.forEach((t, i) => escText(svg, t, 12, y + 9 + font + i * line));
+            y += noteH + 30;
+            if (phaseIndex < phases.length - 1) {
+              el('line', { x1: 0, y1: y - 14, x2: w, y2: y - 14, stroke: 'var(--border)', 'stroke-width': 1 });
+            }
+          });
+
+          svg.setAttribute('viewBox', `0 0 ${w} ${y - 10}`);
+          svg.setAttribute('height', String(y - 10));
+        }
+
+        let lastWidth = 0;
+        new ResizeObserver(() => {
+          const w = Math.round(root.clientWidth);
+          if (w !== lastWidth) {
+            lastWidth = w;
+            paint();
+          }
+        }).observe(root);
+        paint();
+      })();
+    </script>
+  </div>
+</body>
+</html>
