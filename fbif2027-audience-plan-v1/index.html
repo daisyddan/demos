@@ -1,0 +1,1422 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>FBIF 2027 招观与投放全景规划图（12 月起）</title>
+  <style>
+    :root {
+      --fluid-accent: #2383E2;
+      --foreground: #1F2933;
+      --muted-foreground: #52606D;
+      --background: #FFFFFF;
+      --surface: #F7F9FB;
+      --border: #D9E2EC;
+      --border-soft: #E8EEF4;
+      --blue: #2383E2;
+      --teal: #247A8F;
+      --green: #2B7A57;
+      --purple: #6D55A4;
+      --orange: #B8652B;
+      --yellow: #9E7B23;
+      --danger: #C9372C;
+      --font-size-base: 15px;
+      --radius: 8px;
+      --topbar-h: 64px;
+    }
+
+    * { box-sizing: border-box; }
+
+    html {
+      scroll-behavior: smooth;
+      scrollbar-gutter: stable;
+      background: var(--background);
+      color: var(--foreground);
+      font-family: "Inter Variable", "Inter", "Noto Sans SC Variable", "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+      font-size: var(--font-size-base);
+      line-height: 1.6;
+      font-synthesis: none;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      margin: 0;
+      background: var(--background);
+      color: var(--foreground);
+    }
+
+    .tabular { font-variant-numeric: tabular-nums; }
+
+    /* 顶栏吸顶固定，零抖动 */
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      background: rgba(255, 255, 255, 0.94);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border-soft);
+    }
+
+    .topbar-inner {
+      max-width: 1380px;
+      margin: 0 auto;
+      padding: 12px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .brand-block {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      min-width: 240px;
+    }
+
+    .brand-title {
+      margin: 0;
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--foreground);
+      text-wrap: balance;
+    }
+
+    .brand-sub {
+      margin: 0;
+      font-size: 0.85rem;
+      color: var(--muted-foreground);
+    }
+
+    .nav-tabs {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .nav-tab {
+      display: inline-flex;
+      align-items: center;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 0.88rem;
+      font-weight: 500;
+      color: var(--muted-foreground);
+      text-decoration: none;
+      background: transparent;
+      transition: background-color 140ms ease, color 140ms ease;
+    }
+
+    .nav-tab:hover {
+      background: var(--surface);
+      color: var(--foreground);
+    }
+
+    .nav-tab.active {
+      background: color-mix(in srgb, var(--fluid-accent) 12%, #FFFFFF);
+      color: var(--fluid-accent);
+      font-weight: 600;
+    }
+
+    /* 主内容区 */
+    .page {
+      max-width: 1380px;
+      margin: 0 auto;
+      padding: 24px 24px 64px;
+    }
+
+    .section {
+      scroll-margin-top: 84px;
+      margin-bottom: 44px;
+    }
+
+    .section-head {
+      margin-bottom: 16px;
+    }
+
+    .section-head h2 {
+      margin: 0 0 6px;
+      font-size: 1.28rem;
+      font-weight: 700;
+      color: var(--foreground);
+      text-wrap: balance;
+    }
+
+    .section-head p {
+      margin: 0;
+      font-size: 0.92rem;
+      color: var(--muted-foreground);
+      text-wrap: pretty;
+    }
+
+    /* 核心数字总览条 */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+      margin-bottom: 28px;
+    }
+
+    .kpi-card {
+      background: var(--surface);
+      border: 1px solid var(--border-soft);
+      border-radius: var(--radius);
+      padding: 16px 18px;
+    }
+
+    .kpi-label {
+      font-size: 0.84rem;
+      color: var(--muted-foreground);
+      margin-bottom: 6px;
+    }
+
+    .kpi-value {
+      font-size: 1.55rem;
+      font-weight: 700;
+      color: var(--foreground);
+      line-height: 1.2;
+      margin-bottom: 6px;
+    }
+
+    .kpi-value.accent {
+      color: var(--fluid-accent);
+    }
+
+    .kpi-desc {
+      font-size: 0.83rem;
+      color: var(--muted-foreground);
+      margin: 0;
+    }
+
+    /* 阶段图例 */
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-top: 10px;
+      font-size: 0.86rem;
+      color: var(--muted-foreground);
+    }
+
+    .legend span {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .legend i {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+
+    /* SVG 流程图画布 */
+    .canvas-wrap {
+      background: var(--background);
+      border: 1px solid var(--border-soft);
+      border-radius: var(--radius);
+      padding: 20px 18px 16px;
+    }
+
+    .process-drawing {
+      display: block;
+      width: 100%;
+      overflow: visible;
+    }
+
+    .process-drawing text {
+      fill: var(--foreground);
+      font-family: inherit;
+    }
+
+    .process-drawing .strong {
+      font-weight: 600;
+    }
+
+    .process-drawing .quiet {
+      fill: var(--muted-foreground);
+    }
+
+    .process-drawing .connector {
+      fill: none;
+      stroke: color-mix(in srgb, var(--foreground) 34%, var(--background));
+      stroke-width: 1.3;
+    }
+
+    .process-drawing .node {
+      stroke: color-mix(in srgb, var(--foreground) 16%, var(--background));
+      stroke-width: 1;
+    }
+
+    /* 表格样式：清晰对齐、不拦滚轮 */
+    .table-scroll {
+      width: 100%;
+      overflow-x: auto;
+      border: 1px solid var(--border-soft);
+      border-radius: var(--radius);
+      background: var(--background);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 760px;
+      font-size: 0.9rem;
+    }
+
+    th, td {
+      text-align: left;
+      vertical-align: top;
+      padding: 13px 16px;
+      border-bottom: 1px solid var(--border-soft);
+    }
+
+    th {
+      background: var(--surface);
+      font-weight: 600;
+      color: var(--foreground);
+      white-space: nowrap;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    td.num, th.num {
+      text-align: right;
+      white-space: nowrap;
+    }
+
+    .row-highlight td {
+      background: color-mix(in srgb, var(--fluid-accent) 6%, #FFFFFF);
+    }
+
+    .cell-title {
+      font-weight: 600;
+      color: var(--foreground);
+      margin-bottom: 4px;
+    }
+
+    .cell-sub {
+      font-size: 0.84rem;
+      color: var(--muted-foreground);
+      margin: 0;
+    }
+
+    .cell-list {
+      margin: 0;
+      padding-left: 16px;
+    }
+
+    .cell-list li {
+      margin-bottom: 6px;
+    }
+
+    .cell-list li:last-child {
+      margin-bottom: 0;
+    }
+
+    /* 双栏与三栏网格 */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .grid-4 {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .card {
+      background: var(--background);
+      border: 1px solid var(--border-soft);
+      border-radius: var(--radius);
+      padding: 18px 20px;
+    }
+
+    .card-soft {
+      background: var(--surface);
+      border: 1px solid var(--border-soft);
+      border-radius: var(--radius);
+      padding: 18px 20px;
+    }
+
+    .card h3 {
+      margin: 0 0 8px;
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--foreground);
+    }
+
+    .card p, .card-soft p {
+      margin: 0 0 10px;
+      font-size: 0.9rem;
+      color: var(--muted-foreground);
+      text-wrap: pretty;
+    }
+
+    .card p:last-child, .card-soft p:last-child {
+      margin-bottom: 0;
+    }
+
+    .accent-text {
+      color: var(--fluid-accent);
+      font-weight: 600;
+    }
+
+    .danger-text {
+      color: var(--danger);
+      font-weight: 600;
+    }
+
+    /* 难点与突破对照行 */
+    .challenge-list {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .challenge-item {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr);
+      gap: 16px;
+      border: 1px solid var(--border-soft);
+      border-radius: var(--radius);
+      padding: 16px 20px;
+      background: var(--background);
+    }
+
+    .challenge-left {
+      border-right: 1px solid var(--border-soft);
+      padding-right: 16px;
+    }
+
+    .challenge-kicker {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--muted-foreground);
+      margin-bottom: 4px;
+    }
+
+    .challenge-kicker.breakthrough {
+      color: var(--fluid-accent);
+    }
+
+    /* 账号三层隔离卡片 */
+    .tier-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .tier-card {
+      border: 1px solid var(--border-soft);
+      border-top: 3px solid var(--fluid-accent);
+      border-radius: var(--radius);
+      padding: 16px 18px;
+      background: var(--background);
+    }
+
+    .tier-card.tier-red { border-top-color: var(--danger); }
+    .tier-card.tier-green { border-top-color: var(--green); }
+    .tier-card.tier-orange { border-top-color: var(--orange); }
+    .tier-card.tier-blue { border-top-color: var(--fluid-accent); }
+
+    .tier-card h3 {
+      margin: 0 0 6px;
+      font-size: 0.98rem;
+      font-weight: 600;
+    }
+
+    .tier-meta {
+      font-size: 0.82rem;
+      color: var(--muted-foreground);
+      margin-bottom: 10px;
+    }
+
+    /* 展开细节 */
+    .details-stack {
+      margin-top: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    details {
+      border: 1px solid var(--border-soft);
+      border-radius: var(--radius);
+      padding: 12px 16px;
+      background: var(--surface);
+    }
+
+    summary {
+      cursor: pointer;
+      font-weight: 600;
+      color: var(--foreground);
+      font-size: 0.92rem;
+    }
+
+    details[open] summary {
+      margin-bottom: 10px;
+    }
+
+    details ul {
+      margin: 0;
+      padding-left: 18px;
+      font-size: 0.88rem;
+      color: var(--muted-foreground);
+    }
+
+    details li {
+      margin-bottom: 6px;
+    }
+
+    .notice-bar {
+      padding: 14px 18px;
+      border-radius: var(--radius);
+      background: color-mix(in srgb, var(--fluid-accent) 7%, #FFFFFF);
+      border: 1px solid color-mix(in srgb, var(--fluid-accent) 22%, #FFFFFF);
+      font-size: 0.9rem;
+      color: var(--foreground);
+      margin-top: 14px;
+    }
+
+    @media (max-width: 1024px) {
+      .kpi-grid, .grid-4, .tier-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+      .challenge-item, .grid-2 {
+        grid-template-columns: 1fr;
+      }
+      .challenge-left {
+        border-right: none;
+        border-bottom: 1px solid var(--border-soft);
+        padding-right: 0;
+        padding-bottom: 12px;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .topbar-inner, .page {
+        padding-left: 14px;
+        padding-right: 14px;
+      }
+      .kpi-grid, .grid-4, .tier-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand-block">
+        <h1 class="brand-title">FBIF 2027 招观与投放全景规划图（12 月起）</h1>
+        <p class="brand-sub">目标：招观 60,000 人 · 到场 ≥ 40,000 人（到场率 ≥ 66.7%）｜展期：2027-04-21 至 2027-04-23｜已删去 11 月规划</p>
+      </div>
+      <nav class="nav-tabs" aria-label="方案章节导航">
+        <a class="nav-tab active" href="#flow">全景流程图</a>
+        <a class="nav-tab" href="#gap">目标拆解与突破点</a>
+        <a class="nav-tab" href="#community">注册后社群服务</a>
+        <a class="nav-tab" href="#isolation">账号安全隔离</a>
+        <a class="nav-tab" href="#matrix">三线执行矩阵</a>
+        <a class="nav-tab" href="#confirm">待确认拍板清单</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="page">
+
+    <!-- 核心目标与差距总览 -->
+    <section class="kpi-grid" aria-label="核心目标总览">
+      <div class="kpi-card">
+        <div class="kpi-label">2027 招观与到场目标</div>
+        <div class="kpi-value accent tabular">60,000 → 40,000+</div>
+        <p class="kpi-desc">目标整体到场率 ≥ 66.7%（展期比 2026 年提前 6 天）</p>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">对照往年硬缺口</div>
+        <div class="kpi-value tabular">+23.5% 到场率</div>
+        <p class="kpi-desc">往年总到场率约 43.2%（投放 27.8%，私域 63.1%），净缺口约 1.4 万人</p>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">破局核心四引擎</div>
+        <div class="kpi-value">券票 + 深度表单 + 社群 + 裂变</div>
+        <p class="kpi-desc">付费产品券滤水 + 实名问卷回传算法 + 注册后分群培育 + 裂变降本</p>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">12 月核心动作</div>
+        <div class="kpi-value">定规则 · 定商 · 签券 · 隔号</div>
+        <p class="kpi-desc">定 3 家供应商、BD 签自营品牌券、定社群服务 SOP、建三层隔离号池</p>
+      </div>
+    </section>
+
+    <!-- 一、横向全景流程图 -->
+    <section id="flow" class="section">
+      <div class="section-head">
+        <h2>一、2026-12 至 2027-04 全周期业务流程图</h2>
+        <p>从上往下看五大阶段，从左往右看执行步骤；分支与处理结果列在步骤下方，底部可展开细则。</p>
+        <div class="legend" aria-label="阶段颜色说明">
+          <span><i style="background:var(--blue)"></i>12 月：定盘与招商</span>
+          <span><i style="background:var(--teal)"></i>1 月：系统、数据与素材</span>
+          <span><i style="background:var(--green)"></i>2 月中–4 月中：三线放量</span>
+          <span><i style="background:var(--purple)"></i>全程：注册后社群与账号隔离</span>
+          <span><i style="background:var(--orange)"></i>4.11–4.30：冲刺、到场与清算</span>
+        </div>
+      </div>
+
+      <div id="plan-process-map" class="canvas-wrap">
+        <svg class="process-drawing" role="img" aria-label="FBIF 2027 招观与投放五阶段横向流程图，覆盖 12 月定盘定供应商签券、1 月搭系统串数据备素材、2 月中至 4 月中三线放量、注册后社群服务与三层账号隔离、4 月中下旬冲刺催到场及展后自动发券退款闭环。"></svg>
+      </div>
+
+      <div class="details-stack">
+        <details>
+          <summary>展开查看：付费观展票（品牌产品优惠券）规则与超发风控细节</summary>
+          <ul>
+            <li><strong>双票并行</strong>：免费专业观展票（3 天，保留审核）+ 付费产品券观展票（3 天，不审核）；建议取消或弱化免费消费者票，把消费者顺势导入付费产品券票。</li>
+            <li><strong>品牌来源与平台要求</strong>：优先对接展商、赛事、演讲嘉宾；优惠券优先使用<strong>品牌自营平台</strong>（官方小程序 / 商城），不走淘宝天猫等第三方平台。</li>
+            <li><strong>退票与开票窗口</strong>：展前 7 个工作日（2027-04-12 前）支持自主退票与开票申请；展中（04-21 至 04-23）不处理人工退票和开票。建议默认「展后确认到场核销后统一开票」，避免未到场自动退款引发批量红冲发票。</li>
+            <li><strong>展后自动清算</strong>：04-24 完成全量闸机核验；已到场观众通过短信 + 服务号 AI 客服自动发品牌券码；未到场观众于 04-25 至 04-27 自动原路退款。</li>
+            <li><strong>券量超发 / 不够发预案</strong>：所有品牌券入统一库存池，下单即扣减；单品牌消耗达 80% 自动预警 BD 补券，达 100% 自动切换替补品牌或官方兜底券包，严禁无限超卖；同一手机号与身份证限购 1 张。</li>
+          </ul>
+        </details>
+        <details>
+          <summary>展开查看：12 月投放供应商比稿必须核死的 4 项条款（结合近期标杆供应商沟通）</summary>
+          <ul>
+            <li><strong>小程序归属与数据回流</strong>：标杆会展投放商强调其自有小程序配详细问卷与实名验证可共享腾讯 V3 算法回传（同业大展到场率 47%–60%）。12 月须谈清：优先测「我方小程序 + 供应商回传 API」；若允许对方用其小程序，必须在合同锁死「支持我方付费券票与加购展示 + 全量手机号与详细问卷秒级回流我方总表」。</li>
+            <li><strong>报价口径核实</strong>：核实「食品类 35–45 元/人」究竟是注册成本还是到场成本，并写入考核与淘汰条款（2 月中 3 家冷启，3.15 淘汰留 2 家）。</li>
+            <li><strong>裂变与老客排重</strong>：把「老客被广告激活不计费」和「好友裂变带来注册免广告费」写成清晰结算口径，提前加密导入我方历史客户库作排重基线。</li>
+            <li><strong>平台优先级</strong>：重心放在微信 / 腾讯 V3 生态（当前到场率显著高于信息流本地推）；小红书保留私信 AI 客服导企微，建议预留 5–10 万小额预算在 2 月中–3 月中实测付费券转化，看实测到场成本决定是否继续。</li>
+          </ul>
+        </details>
+      </div>
+    </section>
+
+    <!-- 二、6 万招观 → 4 万到场目标拆解 + 难点与突破点 -->
+    <section id="gap" class="section">
+      <div class="section-head">
+        <h2>二、6 万招观 → 4 万到场：数字账本、核心难点与突破点</h2>
+        <p>按 60,000 注册保 40,000 到场，整体到场率需达 66.7%（远超往年 43.2%）。下方对比两条可行路径，并拆清 5 大难点与破局抓手。</p>
+      </div>
+
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>通道 / 方案口径</th>
+              <th class="num">计划注册人数</th>
+              <th class="num">目标到场率</th>
+              <th class="num">预计到场人数</th>
+              <th>成立前提与风险评估</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                <div class="cell-title">往年实际基线（参考）</div>
+                <p class="cell-sub">私域与购票 26,350 + 投放与短信 34,067</p>
+              </td>
+              <td class="num tabular">60,417</td>
+              <td class="num tabular">43.2%</td>
+              <td class="num tabular">26,108</td>
+              <td>按旧模式硬干，距离 40,000 到场存在 <strong>13,892 人硬缺口</strong>；最大短板在微信投放到场率仅 24.5%。</td>
+            </tr>
+            <tr>
+              <td>
+                <div class="cell-title">路径 A：严卡 6 万注册（极限达标）</div>
+                <p class="cell-sub">私域+短信 32,000（75%）+ 投放 28,000（58%）</p>
+              </td>
+              <td class="num tabular">60,000</td>
+              <td class="num tabular">67.1%</td>
+              <td class="num tabular">40,240</td>
+              <td><span class="danger-text">几乎零容错</span>：需同时实现投放达行业天花板（58%）、私域达 75% 且取消绝大部分低意向免费消费者票，任一环节失手即掉下 4 万。</td>
+            </tr>
+            <tr class="row-highlight">
+              <td>
+                <div class="cell-title">路径 B（建议）：注册上浮至 6.8–7.2 万保底 4 万到场</div>
+                <p class="cell-sub">私域+短信 35,000（70%）+ 投放含裂变 35,000（48%–52%）</p>
+              </td>
+              <td class="num tabular">70,000</td>
+              <td class="num tabular">59.0%–61.0%</td>
+              <td class="num tabular">41,300–42,700</td>
+              <td><span class="accent-text">推荐稳妥达标线</span>：通过「好友裂变免费增量 + 老客激活」把注册盘子自然垫高至 7 万左右，投放到场率做到 48%–52%（同业可验证水位）即可稳过 4 万到场。</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div style="height:20px"></div>
+
+      <div class="challenge-list">
+        <div class="challenge-item">
+          <div class="challenge-left">
+            <div class="challenge-kicker">难点 1 · 到场率硬跨越</div>
+            <div class="cell-title">整体到场率要从 43.2% 拉到 66.7%，单靠投放无法做到</div>
+            <p class="cell-sub">同业头部食品/美妆展纯投放最高也只在 47%–55% 区间；往年为了追注册量砍掉调查问卷，导致领票门槛过低、水粉和消费者占比高，拉低全盘到场率。</p>
+          </div>
+          <div>
+            <div class="challenge-kicker breakthrough">突破点 1 · 「付费券滤水 + 深度表单回传 + 结构重配」三板斧</div>
+            <p class="cell-sub">① 取消免费消费者票，转用「付费产品券票（到场发自营券、未到场自动退）」同时做门槛筛选与到场强钩子；② 恢复「实名身份证 + 详细调查问卷」，把高意向样本回传给腾讯 V3 算法放大精准人群，不增成本反提专业度；③ 用好友裂变（100 带 70）和历史老客激活扩大高到场分母。</p>
+          </div>
+        </div>
+
+        <div class="challenge-item">
+          <div class="challenge-left">
+            <div class="challenge-kicker">难点 2 · 展前长周期遗忘流失</div>
+            <div class="cell-title">2 月中至 4 月 21 日跨度超 2 个月，早注册观众极易忘记</div>
+            <p class="cell-sub">往年注册后只靠临展 3–4 条短信和零散朋友圈提醒，缺乏持续触达与价值绑定，早鸟领票群体到场率断崖下跌。</p>
+          </div>
+          <div>
+            <div class="challenge-kicker breakthrough">突破点 2 · 落地「注册后社群精准服务体系」</div>
+            <p class="cell-sub">借鉴行业标杆美妆展打法：注册完成页 5 秒内强引导加专用企微活码（目标通过率 70%–80%），直接依据详细问卷自动分入 4 类主题社群；用 1–2 名运营配标准化工具，按 T-30 / T-14 / T-7 / T-1 周期投喂选品名单、新品剧透与产品券提醒，把投放到场率再顶高 10–15 个百分点。</p>
+          </div>
+        </div>
+
+        <div class="challenge-item">
+          <div class="challenge-left">
+            <div class="challenge-kicker">难点 3 · 账号限流与连坐风险</div>
+            <div class="cell-title">高频导私域 + 大规模点对点群发，可能波及公司主力号</div>
+            <p class="cell-sub">微信单号每日加好友与群发都有严格上限；如果服务观众、群发点对点与销售核心业务混用账号或主体，一旦遭投诉封号会直接损失核心客户资产。</p>
+          </div>
+          <div>
+            <div class="challenge-kicker breakthrough">突破点 3 · 三层账号物理隔离 + 合规官方通道分流</div>
+            <p class="cell-sub">核心销售号（红区）严禁任何群发与公域导流；社群服务（绿区）用独立企微主体 + 10 人官方活码轮询承接；点对点群发（黄区）全部下沉至独立设备/独立卡/独立实名的外围消耗号池并备 30% 热号；纯通知（发券/审核/退款）全走短信与服务号 AI 客服，零封号风险。</p>
+          </div>
+        </div>
+
+        <div class="challenge-item">
+          <div class="challenge-left">
+            <div class="challenge-kicker">难点 4 · 小程序主权与数据割裂</div>
+            <div class="cell-title">自研统一落地页 vs 供应商独家算法小程序存在冲突</div>
+            <p class="cell-sub">我方希望所有供应商走自有小程序以展示产品加购数并统一建总表；但头部供应商依赖自有小程序采集深度问卷并直连腾讯 OID 回传。</p>
+          </div>
+          <div>
+            <div class="challenge-kicker breakthrough">突破点 4 · 12 月合同签死「接口互通与秒级回流」</div>
+            <p class="cell-sub">12 月技术前置介入比稿：首选「我方小程序接通供应商回传 API」；若头部供应商确需用其小程序才能保障 47%+ 到场率，则以「支持我方付费券票展示 + 全量问卷/手机号实时推入我方总表 + 历史老客排重免收费」作为签约前置条件。</p>
+          </div>
+        </div>
+
+        <div class="challenge-item">
+          <div class="challenge-left">
+            <div class="challenge-kicker">难点 5 · 付费产品券招商与履约风险</div>
+            <div class="cell-title">品牌自营券数量不够发、卖超了或展后退票开票扯皮</div>
+            <p class="cell-sub">要求优先品牌自营平台（非第三方电商）会抬高 BD 谈券门槛；如果落地页卖爆但券池没锁死，或展前开了票展后又触发未到场自动退款，会引发客诉与财务灾难。</p>
+          </div>
+          <div>
+            <div class="challenge-kicker breakthrough">突破点 5 · 「曝光换券 + 80% 锁库预警 + 展后统一开票」</div>
+            <p class="cell-sub">用投放页千万级曝光、产品点击与已加购兴趣数据包装 BD 权益，吸引展商/赛事/嘉宾零佣金给自营券；系统按实时库存扣减，80% 预警、100% 切替补兜底券包；票务条款明确展后确认到场后统一开票、未到场原路自动退。</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 三、观众注册后社群服务完整方案 -->
+    <section id="community" class="section">
+      <div class="section-head">
+        <h2>三、观众注册后社群服务完整方案（拉高到场率核心抓手）</h2>
+        <p>定位：把「领完票就失联」改为「注册即建联 → 问卷自动分群 → 阶梯价值培育 → 展前锁定到场」。计划 12 月底联同社群运营负责人敲定最终 SOP。</p>
+      </div>
+
+      <div class="grid-4" style="margin-bottom:16px">
+        <div class="card-soft">
+          <h3>步骤 1 · 5 秒强承接</h3>
+          <p>注册/购票成功页不直接结束，展示「扫码领《2027 选品/新品地图》或激活产品券提醒」专属企微活码，配合短信补推一次，目标微信通过率 <strong>70%–80%</strong>。</p>
+        </div>
+        <div class="card-soft">
+          <h3>步骤 2 · 问卷自动分群</h3>
+          <p>读取注册时填写的详细调查问卷（行业角色 / 观展目的 / 票种），企微欢迎语自动下发对应主题群入口，实现零人工分拣、千人千面服务。</p>
+        </div>
+        <div class="card-soft">
+          <h3>步骤 3 · 四类精准社群</h3>
+          <p>① 渠道选品对接群（渠道/采购）<br>② 品牌趋势与代工群（品牌/研发）<br>③ 老板战略决策群（高管/创始人）<br>④ 付费券票专属核销群（付费购票）</p>
+        </div>
+        <div class="card-soft">
+          <h3>步骤 4 · 轻人效配置</h3>
+          <p>1–2 名专职社群运营 + 合规企微运营系统（自动欢迎语、定时群发、关键词 AI 问答）；单日服务 200+ 群无需人工死盯，严控广告刷屏。</p>
+        </div>
+      </div>
+
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>服务阶段</th>
+              <th>时间节点</th>
+              <th>核心目标</th>
+              <th>四类群差异化服务动作</th>
+              <th>触达通道</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><div class="cell-title">进群破冰期</div></td>
+              <td class="tabular">注册后 24 小时内</td>
+              <td>建立信任，防沉默退群</td>
+              <td>自动发对应电子礼包（渠道发《热门品类展商预览》，品牌发《出海与趋势摘要》，付费票发《已锁定品牌券权益说明与到场发券攻略》）。</td>
+              <td>企微官方欢迎语 + 自动拉群</td>
+            </tr>
+            <tr>
+              <td><div class="cell-title">价值培育期</div></td>
+              <td class="tabular">展前 30 天 – 15 天<br>（03-22 至 04-06）</td>
+              <td>每周 1–2 次强理由，防止遗忘</td>
+              <td>渠道群发「提前预约 1v1 选品对接表」；品牌群发「650+ 全球新品剧透与研发趋势」；老板群发「战略警告性行业洞察」；付费券群预告「热门品牌券加购榜与新增福利」。</td>
+              <td>群内定时播报 + 企微朋友圈（每周 2 次）</td>
+            </tr>
+            <tr>
+              <td><div class="cell-title">行程锁定期</div></td>
+              <td class="tabular">展前 14 天 – 7 天<br>（04-07 至 04-14）</td>
+              <td>推动订票订酒店，锁定高意向</td>
+              <td>发布《观展路线图》《纸质小蓝书与活动区手册领取方式》《周边交通住宿指南》；群内发起「最想逛的 3 个展位/产品」投票，结果同步招展与展商团队。</td>
+              <td>群公告 + 小程序卡片 + 服务号提醒</td>
+            </tr>
+            <tr>
+              <td><div class="cell-title">临展冲刺催到场</div></td>
+              <td class="tabular">展前 3 天 – 展中<br>（04-18 至 04-23）</td>
+              <td>把到场率拉到极致</td>
+              <td><strong>付费券群</strong>强提醒「04-21 起刷身份证入场，展后自动发放自营券码」；<strong>专业群</strong>发「入场码快速通道 + 现场联采会签到时间」；展中第 1 天发「现场盛况实拍 + 爆品试吃排队图」刺激未到场者第 2–3 天赶场。</td>
+              <td>群 @所有人 + 短信分群精准催到场 + AI 客服答疑</td>
+            </tr>
+            <tr>
+              <td><div class="cell-title">展后履约沉淀</div></td>
+              <td class="tabular">展后 1 – 7 天<br>（04-24 至 04-30）</td>
+              <td>完成发券/退款零客诉，沉淀次年资产</td>
+              <td>到场付费观众自动收券码并设 AI 客服自助查券入口；未到场观众同步自动退款进度通知；群内回收简短满意度反馈，优秀老客转入常年行业社群池。</td>
+              <td>短信 + 服务号 AI 客服 + 群收尾公告</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 四、账号安全隔离与防连坐机制 -->
+    <section id="isolation" class="section">
+      <div class="section-head">
+        <h2>四、服务账号群发 / 点对点安全隔离机制（保证其他账号零受影响）</h2>
+        <p>硬原则：<strong>核心资产号绝不碰群发，社群服务号只走官方合规，高频点对点下沉至物理隔离消耗号池，纯通知全走零封号官方通道。</strong></p>
+      </div>
+
+      <div class="tier-grid">
+        <div class="tier-card tier-red">
+          <h3>红区 · 公司核心资产号</h3>
+          <div class="tier-meta">销售主力号 / BD 关系号 / 高层及核心老客号</div>
+          <ul class="cell-list">
+            <li><strong>允许动作</strong>：仅限 1v1 人工精聊、重点老客维系、正常发朋友圈。</li>
+            <li><strong>绝对禁令</strong>：严禁接入任何第三方群发工具；严禁承接公域投放新客加好友；严禁执行大批量点对点轰炸。</li>
+            <li><strong>隔离效果</strong>：彻底远离投诉与风控源头，核心客户资产零风险。</li>
+          </ul>
+        </div>
+
+        <div class="tier-card tier-green">
+          <h3>绿区 · 观众社群服务号池</h3>
+          <div class="tier-meta">独立子企微主体 + 官方企微活码（约 10 人轮询池）</div>
+          <ul class="cell-list">
+            <li><strong>承载任务</strong>：专门承接注册后加好友、自动拉社群、群内培育与 AI 答疑。</li>
+            <li><strong>合规红线</strong>：仅用企微官方活码分流、官方欢迎语、官方客户群群发；严禁第三方模拟点击或外挂，并控制在安全加人阈值内轮换。</li>
+            <li><strong>主体隔离</strong>：优先挂在独立关联主体或专用服务企微下，不与主业务企微混用。</li>
+          </ul>
+        </div>
+
+        <div class="tier-card tier-orange">
+          <h3>黄区 · 点对点外围消耗号池</h3>
+          <div class="tier-meta">独立手机 + 独立 SIM 流量卡 + 独立实名 + 30% 热备</div>
+          <ul class="cell-list">
+            <li><strong>承载任务</strong>：专门执行高风险/高频次的点对点催领票、私域批量群发与活跃促活。</li>
+            <li><strong>物理隔离</strong>：不连公司办公统一 WiFi、不装在红区/绿区同一台手机、不绑定同一企微主体；单号限流或封禁时，<strong>零连坐波及任何其他账号</strong>。</li>
+            <li><strong>安全铁律</strong>：提前 1 个月养号并留 30% 备用号；每波先 500 人灰度测试；文字与海报拆分独立发、错峰限速；发前必与总表去重防投诉。</li>
+          </ul>
+        </div>
+
+        <div class="tier-card tier-blue">
+          <h3>蓝区 · 零封号官方直达通道</h3>
+          <div class="tier-meta">短信通道 + 微信服务号模板消息 + 服务号 AI 客服</div>
+          <ul class="cell-list">
+            <li><strong>承载任务</strong>：全量承接审核结果、展前 4 轮催到场、展后自动发品牌券码、未到场自动退款通知、常见票务自助查询。</li>
+            <li><strong>核心价值</strong>：把 70% 机械通知从微信私聊剥离出去，大幅降低绿区与黄区账号的触达频次和被投诉概率（且往年短信到场率高达 50.3%）。</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="notice-bar">
+        <strong>账号异常应急熔断机制：</strong>每日监控绿区与黄区账号的「好友通过率 / 投诉率 / 发送失败率」。一旦单号出现发送延迟、频繁验证或单日投诉 ≥ 2 次，<strong>立即熔断该号 48 小时</strong>，活码流量 1 分钟内自动切至备用热号池，严禁带病硬发牵连同批次账号。
+      </div>
+    </section>
+
+    <!-- 五、补全白板空白：三线 × 四阶段执行矩阵 -->
+    <section id="matrix" class="section">
+      <div class="section-head">
+        <h2>五、执行阶段「三线 × 四阶段」落地矩阵（补全原白板空白）</h2>
+        <p>直接对应你 2027 规划白板底部的绿色执行区，规划范围全部从 12 月起算。</p>
+      </div>
+
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>业务线</th>
+              <th>1. 排期与准备（12 月 – 1 月）</th>
+              <th>2. 招观执行（2.15 – 4.22）</th>
+              <th>3. 数据复盘与优化（周度闭环）</th>
+              <th>4. 督促到场（4.14 – 4.23）</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><div class="cell-title">公域：投放</div><p class="cell-sub">主力增量通道</p></td>
+              <td>
+                <ul class="cell-list">
+                  <li>12 月定 3 家微信供应商（+ 评估小红书小额试跑），锁定回传与老客排重条款。</li>
+                  <li>1 月搭好小程序/汇总总表，备齐四类素材（极简横图、产品加人九图、短视频、付费券图）与多账户矩阵。</li>
+                  <li>预算按「起跑 10% → 加速 15% → 冲刺+决战 75%+」切分。</li>
+                </ul>
+              </td>
+              <td>
+                <ul class="cell-list">
+                  <li><strong>2.15–3.15 起跑</strong>：3 家冷启 10 天，测付费券票 + 实名详细问卷 + 战略/趋势/出海文案；3.15 淘汰留 2 家。</li>
+                  <li><strong>3.16–4.10 加速</strong>：多账户稳价复刻爆款，防素材判重限流；页面展示浏览/曝光/已加购数。</li>
+                  <li><strong>4.11–4.22 冲刺</strong>：停做新素材，75%+ 预算全砸头部爆款；借好友裂变拉免广告费增量。</li>
+                </ul>
+              </td>
+              <td>
+                <ul class="cell-list">
+                  <li>单户跑出理想成本即锁预算、开新户扩量，严禁单户盲放上限致成本飙升。</li>
+                  <li>每周核对「付费券 vs 免费专业票」注册成本、退款预估与产品加购热度，热度高品类即时反馈 BD 补券/招展。</li>
+                  <li>淘汰连续 3 天超成本线的素材与计划。</li>
+                </ul>
+              </td>
+              <td>
+                <ul class="cell-list">
+                  <li>落地页领票/购票后 5 秒强引导进绿区企微社群，目标承接率 70%–80%。</li>
+                  <li>4.18 / 4.20 由服务号模板消息 + AI 客服定向推送「已锁定品牌产品券，入场解锁」。</li>
+                </ul>
+              </td>
+            </tr>
+            <tr>
+              <td><div class="cell-title">私域：点对点</div><p class="cell-sub">高到场核心底盘</p></td>
+              <td>
+                <ul class="cell-list">
+                  <li>12 月底盘点全公司账号，严格拆入红区（核心号）与黄区（独立消耗号），1 月提前养热备号。</li>
+                  <li>按多维表标签写好「老板 / 渠道 / 品牌 / 代工」四套个性化话术，与销售售卖时间错峰排期。</li>
+                  <li>收缩嘉宾/评委/赛事低效动作，聚焦点对点与轻量化展商分发。</li>
+                </ul>
+              </td>
+              <td>
+                <ul class="cell-list">
+                  <li><strong>2.15–3.15</strong>：销售助理、渠道组、社群组首轮点对点立即起跑。</li>
+                  <li><strong>3.20–4.3</strong>：黄区先 500 人/组灰度测试文字与海报拆分错峰发；精选品牌+代工推联采会。</li>
+                  <li><strong>4.4–4.13</strong>：全量推小蓝书/手册/付费券福利，催号主自发一轮。</li>
+                  <li><strong>4.14–4.20</strong>：推「下周失效」，视进度启公众号公开赠票预案；朋友圈加密至每日 1–3 条。</li>
+                </ul>
+              </td>
+              <td>
+                <ul class="cell-list">
+                  <li>按执行组与账号追踪发送量、领票数与转化率（对标 0.8%–1.2% 基准）。</li>
+                  <li>每日监控黄区账号健康度，异常立即熔断切热备号。</li>
+                  <li>发前严格与总表去重，已领票/购票者不重发催领，高意向回复反推销售。</li>
+                </ul>
+              </td>
+              <td>
+                <ul class="cell-list">
+                  <li>展前 7 天（4.14）与展前 1 天（4.20）朋友圈刷屏 + 精准提醒已领票老客。</li>
+                  <li>结合线下渠道联采会、限量纸质小蓝书与品牌产品券三重到场钩子。</li>
+                </ul>
+              </td>
+            </tr>
+            <tr>
+              <td><div class="cell-title">短信</div><p class="cell-sub">高性价比直达通道</p></td>
+              <td>
+                <ul class="cell-list">
+                  <li>1 月尽可能收集并清洗全公司历史有效手机号，去空号并打上客户类型标签。</li>
+                  <li>完成 3 类短信文案小样本测试（趋势选品 / 限时失效 / 到场领产品券）。</li>
+                  <li>规划 8–10 轮排期，预算预留 15–20 万。</li>
+                </ul>
+              </td>
+              <td>
+                <ul class="cell-list">
+                  <li><strong>3.25–4.16（催领票 5–6 轮）</strong>：每 4–5 天发一轮，新收集号码单独补发。</li>
+                  <li><strong>红线</strong>：每次发送前 1 小时与统一总表比对，绝对不给已注册/已购票人重发催领票短信。</li>
+                </ul>
+              </td>
+              <td>
+                <ul class="cell-list">
+                  <li>发出后 24 小时复盘送达率、点击率、注册成本与预估到场成本，淘汰低点击文案。</li>
+                  <li>高转化模板留到展前 10 天放量发送。</li>
+                </ul>
+              </td>
+              <td>
+                <ul class="cell-list">
+                  <li><strong>4.15 / 4.18 / 4.20 / 4.21（催到场 4 轮）</strong>：分专业观众与付费券观众发差异化到场提醒。</li>
+                  <li><strong>4.24–4.25 展后履约</strong>：依闸机实名记录自动发品牌券码短信，未到场触发退款通知。</li>
+                </ul>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 六、全部待确认拍板清单 -->
+    <section id="confirm" class="section">
+      <div class="section-head">
+        <h2>六、需要你确认拍板的全部清单（共 9 项，按决策紧迫度排序）</h2>
+        <p>以下 9 项直接决定 12 月供应商签约、系统架构与 4 万到场目标的落地口径，建议在对应节点前逐项拍板。</p>
+      </div>
+
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>序号</th>
+              <th>待确认事项</th>
+              <th>备选方向与影响</th>
+              <th>推荐建议</th>
+              <th>最晚拍板</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="tabular">1</td>
+              <td><div class="cell-title">6 万招观口径：硬上限还是保底线？</div></td>
+              <td>若严格卡死 6 万注册又要 4 万到场，到场率须达 66.7%，容错极低；若允许靠裂变/老客把注册做到 6.8–7.2 万，则 56%–60% 到场率即可稳过 4 万。</td>
+              <td><span class="accent-text">按「注册不封顶（冲 7 万）、硬保 4 万到场」立项</span></td>
+              <td class="tabular">12 月上旬</td>
+            </tr>
+            <tr>
+              <td class="tabular">2</td>
+              <td><div class="cell-title">票种组合与免费消费者票取舍</div></td>
+              <td>保留免费消费者票会拉低到场率与展商满意度；取消则总注册数看似减少，但能把消费者自然导入付费产品券票。</td>
+              <td><span class="accent-text">保留免费专业票（审核）+ 付费产品券票（不审核），取消免费消费者票</span></td>
+              <td class="tabular">12 月 10 日</td>
+            </tr>
+            <tr>
+              <td class="tabular">3</td>
+              <td><div class="cell-title">付费产品券票定价与展商券面门槛</div></td>
+              <td>定价太高影响转化、太低筛不动水军；需确保品牌自营券的实际让利明显大于票价，形成「到场稳赚、不去自动退」的强心理杠杆。</td>
+              <td><span class="accent-text">票价定在 29–49 元区间，配面值 ≥ 票价 2 倍的自营产品券包</span></td>
+              <td class="tabular">12 月 10 日</td>
+            </tr>
+            <tr>
+              <td class="tabular">4</td>
+              <td><div class="cell-title">小红书渠道定位：全停投流还是小额复测？</div></td>
+              <td>往年小红书到场人均 138 元、到场率 35.8%（优于微信）且转企微顺畅；全停可能丢掉高性价比新品牌与消费入口。</td>
+              <td><span class="accent-text">私信 AI 客服导企微保底 + 预留 5–10 万 2 月中测付费券，3.15 按实测去留</span></td>
+              <td class="tabular">12 月 15 日</td>
+            </tr>
+            <tr>
+              <td class="tabular">5</td>
+              <td><div class="cell-title">小程序归属：全走自有 vs 供应商共存</div></td>
+              <td>全走自有最利于统一数据与产品加购展示；但标杆会展供应商依赖自有小程序直连腾讯 V3 算法回传跑高到场率。</td>
+              <td><span class="accent-text">优先测自有小程序接回传；若用对方小程序，合同锁死付费券承载 + 秒级全量数据回流</span></td>
+              <td class="tabular">12 月 20 日</td>
+            </tr>
+            <tr>
+              <td class="tabular">6</td>
+              <td><div class="cell-title">购票系统是否同步上架产品券票</div></td>
+              <td>同步上架可统一官网/私域口径并避免老客疑惑，但须与投放端共用同一份实时券库存池。</td>
+              <td><span class="accent-text">同步上架，与投放页共享同一实时库存与 80% 预警机制</span></td>
+              <td class="tabular">12 月 20 日</td>
+            </tr>
+            <tr>
+              <td class="tabular">7</td>
+              <td><div class="cell-title">付费票开票时点（展前 vs 展后）</div></td>
+              <td>若展前 7 工作日前允许开票，展后未到场触发自动退款时会产生大量发票红冲工作量与财务风险。</td>
+              <td><span class="accent-text">默认「展后确认到场核销后统一开票」，未到场直接原路退款免红冲</span></td>
+              <td class="tabular">12 月 20 日</td>
+            </tr>
+            <tr>
+              <td class="tabular">8</td>
+              <td><div class="cell-title">详细调查问卷字段标准（兼顾回传与分群）</div></td>
+              <td>问卷太短无法分群且算法学不到高质量特征；需定出「身份角色 / 行业品类 / 职务决策权 / 采购需求」标准必选 5–6 题 + 实名身份证校验。</td>
+              <td><span class="accent-text">采用 5–6 题结构化单选问卷 + 实名验证，一份问卷同步服务算法回传、社群分群与招展</span></td>
+              <td class="tabular">12 月 25 日</td>
+            </tr>
+            <tr>
+              <td class="tabular">9</td>
+              <td><div class="cell-title">账号隔离投入：独立企微主体与外围消耗号预算</div></td>
+              <td>绿区需配置独立服务企微与 10 人活码池（含合规运营系统），黄区需配置独立设备、流量卡与 30% 备用热号。</td>
+              <td><span class="accent-text">12 月底立项采购独立外围号池与合规企微工具，1 月初开始养号</span></td>
+              <td class="tabular">12 月 31 日</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    (() => {
+      // 顶栏导航高亮随滚动更新
+      const navLinks = Array.from(document.querySelectorAll('.nav-tab'));
+      const sections = navLinks.map(a => document.querySelector(a.getAttribute('href'))).filter(Boolean);
+      const observer = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            navLinks.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + entry.target.id));
+          }
+        });
+      }, { rootMargin: '-25% 0px -65% 0px' });
+      sections.forEach(s => observer.observe(s));
+
+      // 横向自适应 SVG 流程图（延续既定横向泳道样式，主色采用 Notion 蓝）
+      const root = document.getElementById('plan-process-map');
+      const svg = root.querySelector('.process-drawing');
+      const ns = 'http://www.w3.org/2000/svg';
+      const measure = document.createElement('canvas').getContext('2d');
+
+      const phases = [
+        {
+          name: '12 月定盘',
+          who: '统筹 / BD / 技术 / 社群负责人 · 2026-12-01 至 12-31',
+          color: '--blue',
+          steps: [
+            {
+              title: '定票种与风控规则',
+              nodes: [
+                { title: '双票并行拍板', lines: ['付费产品券票：3 天不审核', '免费专业票：3 天需审核', '评估取消免费消费者票'] },
+                { title: '锁死退款与开票口径', lines: ['展前 7 工作日（4.12）前可退', '建议展后到场核销再统一开票'], kind: 'notice' }
+              ]
+            },
+            {
+              title: '定 3 家投放供应商',
+              nodes: [
+                { title: '腾讯 V3 为核心筛选 3 家', lines: ['核实 35–45 元报价口径', '核实详细问卷+实名回传能力', '写死裂变与老客激活排重'] },
+                { title: '小红书定位同步定', lines: ['私信 AI 客服导企微保底', '可选留小额预算 2 月实测'] }
+              ]
+            },
+            {
+              title: 'BD 启动品牌券招商',
+              nodes: [
+                { title: '瞄准展商 / 赛事 / 嘉宾', lines: ['优先品牌自营小程序/商城', '不走淘宝天猫等第三方'] },
+                { title: '建库存与弹性兜底池', lines: ['用落地页曝光与加购数据换券', '签约弹性补券防卖超断货'] }
+              ]
+            },
+            {
+              title: '定社群 SOP 与账号分层',
+              nodes: [
+                { title: '12 月底定稿社群服务方案', lines: ['明确四类精准分群与培育节奏', '敲定企微运营系统与人力'] },
+                { title: '全公司账号盘点与隔离', lines: ['划分红区核心号/绿区企微池', '立项采购黄区独立外围号'] }
+              ]
+            }
+          ],
+          note: '12 月是全年胜负手：把供应商技术门槛（实名详细问卷 + 数据回流）、付费券池与账号隔离全部前置定死，彻底避开往年 3 月仓促起步的坑。'
+        },
+        {
+          name: '1 月备战',
+          who: '技术 / 设计 / 投放 / 私域运营 · 2027-01-01 至 02-04（春节前）',
+          color: '--teal',
+          steps: [
+            {
+              title: '小程序与购票上架',
+              nodes: [
+                { title: '统一双票入口与库存池', lines: ['落地页加总浏览量与产品曝光', '展示「已加购 XX 人」氛围数据'] },
+                { title: '上线券池 80% 预警熔断', lines: ['下单锁库，100% 切替补券包', '同手机号/身份证限购 1 张'] }
+              ]
+            },
+            {
+              title: '多端总表与回传联调',
+              nodes: [
+                { title: '以手机号汇成一张总表', lines: ['打通投放/购票/赠票/短信/闸机', '支撑实时去重与展后自动清算'] },
+                { title: '完成 3 家供应商压测', lines: ['联调腾讯 V3 回传与详细问卷', '提前开足多广告子账户'] }
+              ]
+            },
+            {
+              title: '备齐首批素材与话术',
+              nodes: [
+                { title: '投放四类核心素材就位', lines: ['极简横图 + 产品加人九图', '短视频 + 付费产品券爆款图'] },
+                { title: '分角色差异化内容', lines: ['战略警告吸老板、趋势吸渠道', '出海吸品牌；私域分标签话术'] }
+              ]
+            },
+            {
+              title: '养号与短信库清洗',
+              nodes: [
+                { title: '绿区/黄区账号提前养号', lines: ['10 人企微活码池配置测试', '黄区独立设备号留 30% 热备'] },
+                { title: '清洗全公司有效手机号', lines: ['补齐客户标签、去空号', '小样本测试 3 类短信文案'] }
+              ]
+            }
+          ],
+          note: '春节（2027-02-06）前必须完成全部系统联调、首批券码入库、素材储备与养号，保证节后第一天即开枪。'
+        },
+        {
+          name: '节后放量',
+          who: '投放 / 销售 / 渠道 / 社群 · 2027-02-15 至 04-10（距开展 65–11 天）',
+          color: '--green',
+          steps: [
+            {
+              title: '2.15–3.15 冷启与首轮',
+              nodes: [
+                { title: '投放：3 家冷启 10 天', lines: ['测付费券票与实名详细问卷', '3.15 末位淘汰，保留 2 家主力'] },
+                { title: '私域：首轮点对点起跑', lines: ['销售/渠道/社群组点对点触达', '与销售售卖时间错峰结合'] }
+              ]
+            },
+            {
+              title: '3.16–3.31 加速与灰度',
+              nodes: [
+                { title: '投放：多账户稳价扩量', lines: ['单户成本好则锁预算开新户', '持续上新横图/九图防判重'] },
+                { title: '私域：黄区 500 人灰度测试', lines: ['文字与海报拆分独立错峰发', '精选品牌+代工推联采会'] }
+              ]
+            },
+            {
+              title: '4.1–4.10 全量与短信启动',
+              nodes: [
+                { title: '投放：确认第二批爆款', lines: ['追踪产品加购热度反哺招展', '热度高品类同步 BD 补券'] },
+                { title: '私域+短信：多波全覆盖', lines: ['推小蓝书/手册/产品券钩子', '短信每 4–5 天催领，严剔已注册'] }
+              ]
+            },
+            {
+              title: '裂变与老客激活放大',
+              nodes: [
+                { title: '好友邀约裂变拉免费增量', lines: ['同业可实现 100 带 70 零投流费', '自然垫高注册池保底 4 万到场'] },
+                { title: '历史老客激活降综合成本', lines: ['按排重基线激活往届高意向客', '高到场底盘占比推升至 50%+'] }
+              ]
+            }
+          ],
+          note: '每周日固定复盘：单户不盲放预算上限；短信每次发前 1 小时强制比对总表去重；靠裂变与老客把高到场分母做厚。'
+        },
+        {
+          name: '社群隔离',
+          who: '社群运营（1–2 人）/ 企微系统 / AI 客服 · 注册后全程贯穿',
+          color: '--purple',
+          steps: [
+            {
+              title: '注册 5 秒强导企微',
+              nodes: [
+                { title: '绿区 10 人官方活码承接', lines: ['成功页以地图/券提醒引导加微', '目标通过率 70%–80%'] },
+                { title: '读取问卷自动打标签', lines: ['无需人工逐个询问身份', '自动匹配四类精准服务群'] }
+              ]
+            },
+            {
+              title: '四类主题群阶梯培育',
+              nodes: [
+                { title: '渠道 / 品牌 / 老板 / 付费券群', lines: ['展前 30 天：发名录与趋势洞察', '展前 14 天：发路线与对接预约'] },
+                { title: '展前 7 天锁定入场动机', lines: ['付费券群强提醒到场解锁券码', '群内投票反哺现场与招展'] }
+              ]
+            },
+            {
+              title: '三层账号物理防连坐',
+              nodes: [
+                { title: '红区核心号零群发', lines: ['销售主力号绝不碰群发与外挂'] },
+                { title: '黄区独立设备独立卡', lines: ['高频点对点与主号物理隔离', '配 30% 热备，异常 48h 熔断'], kind: 'notice' }
+              ],
+              branch: true
+            },
+            {
+              title: '官方通道承接强通知',
+              nodes: [
+                { title: '短信 + 服务号 + AI 客服', lines: ['审核、催到场、发券、退款全分流', '不占私域额度，零封号风险'] }
+              ]
+            }
+          ],
+          note: '注册后社群服务是把投放到场率从 45%–50% 顶上 60%+ 的关键杠杆；三层物理隔离确保高频触达零连坐波及销售主号。'
+        },
+        {
+          name: '冲刺清算',
+          who: '全团队联动 / 自动化票务与 AI 客服 · 2027-04-11 至 04-30',
+          color: '--orange',
+          steps: [
+            {
+              title: '4.11–4.20 临展冲刺',
+              nodes: [
+                { title: '投放 75%+ 预算砸爆款', lines: ['停止做新素材，全量冲峰值', '4.12 截止付费票人工退/开票'] },
+                { title: '私域推「下周失效」', lines: ['朋友圈加密至日更 2–3 条', '视进度启公众号公开赠票预案'] }
+              ]
+            },
+            {
+              title: '四波立体催到场',
+              nodes: [
+                { title: '4.15 / 4.18 / 4.20 / 4.21 触达', lines: ['短信分专业与付费券精准发', '社群 @所有人 + 服务号提醒'] },
+                { title: '三重到场硬钩子', lines: ['付费票：到场自动解锁品牌券', '专业票：联采会 + 限量小蓝书'] }
+              ]
+            },
+            {
+              title: '4.21–4.23 展中决战',
+              nodes: [
+                { title: '展中前 1.5 天持续投流', lines: ['收割同城即时决策入场观众', '群内发盛况实拍拉动次日赶场'] },
+                { title: '展中不处理退票与开票', lines: ['实时盯闸机到场与券池核销'], kind: 'notice' }
+              ]
+            },
+            {
+              title: '4.24–4.30 自动履约闭环',
+              nodes: [
+                { title: '依闸机实名记录自动判定', lines: ['04-24 完成全量到场数据核验'] },
+                { title: '已到场 → 自动发自营券码', lines: ['短信 + 服务号 AI 客服双通道', '未达补发，支持自助查券'] },
+                { title: '未到场 → 自动原路退款', lines: ['04-25 至 04-27 分批原路退', '展后统一开票免红冲'], kind: 'notice' }
+              ],
+              branchAfterFirst: true
+            }
+          ],
+          note: '最后 10 天决定 80% 投放转化与最终 4 万到场成败；展后以闸机实名记录为准自动发券或退款，实现低客诉闭环。'
+        }
+      ];
+
+      function el(name, attrs = {}, parent = svg) {
+        const n = document.createElementNS(ns, name);
+        Object.entries(attrs).forEach(([k, v]) => n.setAttribute(k, String(v)));
+        parent.appendChild(n);
+        return n;
+      }
+
+      function escText(parent, text, x, y, cls = '', anchor = 'start') {
+        const n = el('text', { x, y, class: cls, 'text-anchor': anchor }, parent);
+        n.textContent = text;
+        return n;
+      }
+
+      let font, line, family, compact;
+
+      function wrap(text, width) {
+        measure.font = `400 ${font}px ${family}`;
+        const out = [];
+        let current = '';
+        for (const char of text) {
+          if (current && measure.measureText(current + char).width > width) {
+            out.push(current);
+            current = char;
+          } else {
+            current += char;
+          }
+        }
+        if (current) out.push(current);
+        return out;
+      }
+
+      function nodeSize(node, w) {
+        const titles = wrap(node.title, w - 22);
+        const lines = node.lines.flatMap(t => wrap(t, w - 22));
+        return { titles, lines, h: 22 + line * (titles.length + lines.length) + (lines.length ? 5 : 0) };
+      }
+
+      function box(node, x, y, w, color) {
+        const m = nodeSize(node, w);
+        const g = el('g');
+        const tone = node.kind === 'notice' ? '--yellow' : color;
+        el('rect', {
+          x, y, width: w, height: m.h, rx: 6, class: 'node',
+          fill: `color-mix(in srgb,var(${tone}) 9%,var(--background))`
+        }, g);
+        let baseline = y + 11 + font;
+        m.titles.forEach(t => { escText(g, t, x + w / 2, baseline, 'strong', 'middle'); baseline += line; });
+        if (m.lines.length) baseline += 5;
+        m.lines.forEach(t => { escText(g, t, x + w / 2, baseline, 'quiet', 'middle'); baseline += line; });
+        return m.h;
+      }
+
+      function arrow(d) {
+        return el('path', { d, class: 'connector', 'marker-end': 'url(#process-arrow)' });
+      }
+
+      function header(x, y, w, h, title, color, idx) {
+        const notch = compact ? 0 : 12;
+        const d = `M${x} ${y}H${x + w - notch}L${x + w} ${y + h / 2}L${x + w - notch} ${y + h}H${x}L${x + notch} ${y + h / 2}Z`;
+        el('path', {
+          d,
+          fill: `color-mix(in srgb,var(${color}) ${14 + idx * 6}%,var(--background))`,
+          stroke: `color-mix(in srgb,var(${color}) 55%,var(--border))`,
+          'stroke-width': 1.2
+        });
+        const lines = wrap(title, w - 34);
+        const first = y + h / 2 - (lines.length - 1) * line / 2 + font * 0.35;
+        lines.forEach((t, i) => escText(svg, t, x + w / 2, first + i * line, 'strong', 'middle'));
+      }
+
+      function paint() {
+        const w = Math.max(280, Math.floor(root.clientWidth - 36));
+        const style = getComputedStyle(root);
+        font = Math.min(14, parseFloat(style.fontSize) || 14);
+        line = font * 1.48;
+        family = style.fontFamily;
+        compact = w < 720;
+        svg.replaceChildren();
+
+        const titleEl = el('title');
+        titleEl.textContent = 'FBIF 2027 招观与投放五阶段全景业务流程图';
+
+        const defs = el('defs');
+        const marker = el('marker', {
+          id: 'process-arrow', orient: 'auto', markerUnits: 'userSpaceOnUse',
+          refX: 7, refY: 4, markerWidth: 9, markerHeight: 8
+        }, defs);
+        el('path', { d: 'M1 1L7 4L1 7', fill: 'none', stroke: 'context-stroke', 'stroke-width': 1.3 }, marker);
+
+        let y = 4;
+        phases.forEach((phase, phaseIndex) => {
+          const labelH = line + 12;
+          el('rect', { x: 0, y: y + 3, width: 5, height: font + 5, rx: 2, fill: `var(${phase.color})` });
+          escText(svg, phase.name, 14, y + font + 4, 'strong');
+          const captionX = 14 + font * 4.8 + 16;
+          const captionLines = wrap(phase.who, Math.max(120, w - captionX - 6));
+          captionLines.forEach((t, i) => escText(svg, t, captionX, y + font + 4 + i * line, 'quiet'));
+          y += Math.max(labelH, captionLines.length * line + 12);
+
+          const cols = compact ? 1 : phase.steps.length;
+          const gap = compact ? 0 : 12;
+          const colW = (w - gap * (cols - 1)) / cols;
+          let maxBottom = y;
+
+          phase.steps.forEach((step, i) => {
+            const x = compact ? 0 : i * (colW + gap);
+            const sy = compact ? maxBottom : y;
+            const titleLines = wrap(step.title, colW - 34);
+            const hh = Math.max(42, titleLines.length * line + 16);
+            header(x, sy, colW, hh, step.title, phase.color, i);
+
+            const nx = x + 16;
+            const nw = colW - 22;
+            let ny = sy + hh + 20;
+            let prevBottom = sy + hh;
+            const branchX = x + 6;
+            let branchY = sy + hh + 5;
+
+            step.nodes.forEach((node, ni) => {
+              if (step.branch || (step.branchAfterFirst && ni > 0)) {
+                const nm = nodeSize(node, nw);
+                if (step.branchAfterFirst && ni === 1) {
+                  el('path', { d: `M${nx + nw / 2} ${prevBottom + 4}V${prevBottom + 10}H${branchX}V${ny + nm.h / 2}`, class: 'connector' });
+                } else {
+                  el('path', { d: `M${branchX} ${branchY}V${ny + nm.h / 2}`, class: 'connector' });
+                }
+                arrow(`M${branchX} ${ny + nm.h / 2}H${nx - 4}`);
+                branchY = ny + nm.h / 2;
+              } else {
+                arrow(`M${nx + nw / 2} ${prevBottom + 4}V${ny - 5}`);
+              }
+              const height = box(node, nx, ny, nw, phase.color);
+              prevBottom = ny + height;
+              ny = prevBottom + 18;
+            });
+            maxBottom = Math.max(maxBottom, prevBottom + 16);
+            if (compact) maxBottom += 12;
+          });
+
+          y = maxBottom;
+          const noteLines = wrap(phase.note, w - 24);
+          const noteH = noteLines.length * line + 18;
+          el('rect', {
+            x: 0, y, width: w, height: noteH, rx: 6,
+            fill: `color-mix(in srgb,var(${phase.color}) 7%,var(--background))`
+          });
+          noteLines.forEach((t, i) => escText(svg, t, 12, y + 9 + font + i * line));
+          y += noteH + 28;
+          if (phaseIndex < phases.length - 1) {
+            el('line', { x1: 0, y1: y - 14, x2: w, y2: y - 14, stroke: 'var(--border-soft)', 'stroke-width': 1 });
+          }
+        });
+
+        svg.setAttribute('viewBox', `0 0 ${w} ${y - 10}`);
+      }
+
+      paint();
+      let timer;
+      window.addEventListener('resize', () => {
+        clearTimeout(timer);
+        timer = setTimeout(paint, 120);
+      });
+    })();
+  </script>
+</body>
+</html>
