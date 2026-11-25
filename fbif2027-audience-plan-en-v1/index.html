@@ -1,0 +1,1535 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>FBIF 2027 Visitor Acquisition &amp; Paid Media Plan (From Dec 2026)</title>
+  <style>
+    :root {
+      --fluid-accent: #2383E2;
+      --foreground: #1F2933;
+      --muted-foreground: #52606D;
+      --background: #FFFFFF;
+      --surface: #F7F9FB;
+      --border: #D9E2EC;
+      --border-soft: #E8EEF4;
+      --blue: #2383E2;
+      --teal: #247A8F;
+      --green: #2B7A57;
+      --purple: #6D55A4;
+      --orange: #B8652B;
+      --yellow: #9E7B23;
+      --danger: #C9372C;
+      --font-size-base: 15px;
+      --radius: 8px;
+    }
+
+    * { box-sizing: border-box; }
+
+    html {
+      scroll-behavior: smooth;
+      scrollbar-gutter: stable;
+      background: var(--background);
+      color: var(--foreground);
+      font-family: "Inter Variable", "Inter", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      font-size: var(--font-size-base);
+      line-height: 1.55;
+      font-synthesis: none;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      margin: 0;
+      background: var(--background);
+      color: var(--foreground);
+    }
+
+    .tabular { font-variant-numeric: tabular-nums; }
+
+    /* Sticky Top Navigation */
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      background: rgba(255, 255, 255, 0.94);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border-soft);
+    }
+
+    .topbar-inner {
+      max-width: 1380px;
+      margin: 0 auto;
+      padding: 12px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .brand-block {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      min-width: 260px;
+    }
+
+    .brand-title {
+      margin: 0;
+      font-size: 1.12rem;
+      font-weight: 700;
+      color: var(--foreground);
+      text-wrap: balance;
+    }
+
+    .brand-sub {
+      margin: 0;
+      font-size: 0.84rem;
+      color: var(--muted-foreground);
+    }
+
+    .nav-tabs {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .nav-tab {
+      display: inline-flex;
+      align-items: center;
+      padding: 6px 11px;
+      border-radius: 6px;
+      font-size: 0.86rem;
+      font-weight: 500;
+      color: var(--muted-foreground);
+      text-decoration: none;
+      background: transparent;
+      transition: background-color 140ms ease, color 140ms ease;
+    }
+
+    .nav-tab:hover {
+      background: var(--surface);
+      color: var(--foreground);
+    }
+
+    .nav-tab.active {
+      background: color-mix(in srgb, var(--fluid-accent) 12%, #FFFFFF);
+      color: var(--fluid-accent);
+      font-weight: 600;
+    }
+
+    .page {
+      max-width: 1380px;
+      margin: 0 auto;
+      padding: 24px 24px 64px;
+    }
+
+    .section {
+      scroll-margin-top: 84px;
+      margin-bottom: 44px;
+    }
+
+    .section-head {
+      margin-bottom: 16px;
+    }
+
+    .section-head h2 {
+      margin: 0 0 6px;
+      font-size: 1.26rem;
+      font-weight: 700;
+      color: var(--foreground);
+      text-wrap: balance;
+    }
+
+    .section-head p {
+      margin: 0;
+      font-size: 0.91rem;
+      color: var(--muted-foreground);
+      text-wrap: pretty;
+    }
+
+    /* KPI Summary Strip */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+      margin-bottom: 28px;
+    }
+
+    .kpi-card {
+      background: var(--surface);
+      border: 1px solid var(--border-soft);
+      border-radius: var(--radius);
+      padding: 16px 18px;
+    }
+
+    .kpi-label {
+      font-size: 0.82rem;
+      color: var(--muted-foreground);
+      margin-bottom: 6px;
+    }
+
+    .kpi-value {
+      font-size: 1.32rem;
+      font-weight: 700;
+      color: var(--foreground);
+      line-height: 1.25;
+      margin-bottom: 6px;
+    }
+
+    .kpi-value.accent {
+      color: var(--fluid-accent);
+    }
+
+    .kpi-desc {
+      font-size: 0.82rem;
+      color: var(--muted-foreground);
+      margin: 0;
+    }
+
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-top: 10px;
+      font-size: 0.85rem;
+      color: var(--muted-foreground);
+    }
+
+    .legend span {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .legend i {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+
+    /* SVG Canvas */
+    .canvas-wrap {
+      background: var(--background);
+      border: 1px solid var(--border-soft);
+      border-radius: var(--radius);
+      padding: 20px 18px 16px;
+    }
+
+    .process-drawing {
+      display: block;
+      width: 100%;
+      overflow: visible;
+    }
+
+    .process-drawing text {
+      fill: var(--foreground);
+      font-family: inherit;
+    }
+
+    .process-drawing .strong {
+      font-weight: 600;
+    }
+
+    .process-drawing .quiet {
+      fill: var(--muted-foreground);
+    }
+
+    .process-drawing .connector {
+      fill: none;
+      stroke: color-mix(in srgb, var(--foreground) 34%, var(--background));
+      stroke-width: 1.3;
+    }
+
+    .process-drawing .node {
+      stroke: color-mix(in srgb, var(--foreground) 16%, var(--background));
+      stroke-width: 1;
+    }
+
+    /* Tables */
+    .table-scroll {
+      width: 100%;
+      overflow-x: auto;
+      border: 1px solid var(--border-soft);
+      border-radius: var(--radius);
+      background: var(--background);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 840px;
+      font-size: 0.88rem;
+    }
+
+    th, td {
+      text-align: left;
+      vertical-align: top;
+      padding: 13px 15px;
+      border-bottom: 1px solid var(--border-soft);
+    }
+
+    th {
+      background: var(--surface);
+      font-weight: 600;
+      color: var(--foreground);
+      white-space: nowrap;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    td.num, th.num {
+      text-align: right;
+      white-space: nowrap;
+    }
+
+    .row-highlight td {
+      background: color-mix(in srgb, var(--fluid-accent) 6%, #FFFFFF);
+    }
+
+    .row-confirmed td {
+      background: color-mix(in srgb, var(--green) 5%, #FFFFFF);
+    }
+
+    .cell-title {
+      font-weight: 600;
+      color: var(--foreground);
+      margin-bottom: 4px;
+    }
+
+    .cell-sub {
+      font-size: 0.83rem;
+      color: var(--muted-foreground);
+      margin: 0;
+    }
+
+    .cell-list {
+      margin: 0;
+      padding-left: 16px;
+    }
+
+    .cell-list li {
+      margin-bottom: 6px;
+    }
+
+    .cell-list li:last-child {
+      margin-bottom: 0;
+    }
+
+    .accent-text {
+      color: var(--fluid-accent);
+      font-weight: 600;
+    }
+
+    .ok-text {
+      color: var(--green);
+      font-weight: 600;
+    }
+
+    .danger-text {
+      color: var(--danger);
+      font-weight: 600;
+    }
+
+    /* Cards & Grids */
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .card-soft {
+      background: var(--surface);
+      border: 1px solid var(--border-soft);
+      border-radius: var(--radius);
+      padding: 16px 18px;
+    }
+
+    .card-soft h3 {
+      margin: 0 0 6px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--foreground);
+    }
+
+    .card-soft p {
+      margin: 0;
+      font-size: 0.86rem;
+      color: var(--muted-foreground);
+      text-wrap: pretty;
+    }
+
+    /* Optional Tasting Hook (Conflict-Free Redesign) */
+    .optional-box {
+      margin-top: 18px;
+      border: 1px solid color-mix(in srgb, var(--orange) 30%, var(--border));
+      border-left: 4px solid var(--orange);
+      border-radius: var(--radius);
+      padding: 18px 20px;
+      background: color-mix(in srgb, var(--orange) 5%, #FFFFFF);
+    }
+
+    .optional-box h3 {
+      margin: 0 0 8px;
+      font-size: 0.99rem;
+      font-weight: 600;
+      color: var(--foreground);
+    }
+
+    .optional-box p {
+      margin: 0 0 12px;
+      font-size: 0.88rem;
+      color: var(--muted-foreground);
+    }
+
+    .optional-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .optional-cell {
+      background: #FFFFFF;
+      border: 1px solid var(--border-soft);
+      border-radius: 6px;
+      padding: 12px 14px;
+      font-size: 0.85rem;
+      color: var(--muted-foreground);
+    }
+
+    .optional-cell > strong:first-child {
+      display: block;
+      color: var(--foreground);
+      margin-bottom: 5px;
+      font-size: 0.88rem;
+    }
+
+    .optional-cell strong {
+      color: var(--foreground);
+      font-weight: 600;
+    }
+
+    .optional-foot {
+      margin-top: 12px;
+      font-size: 0.84rem;
+      color: var(--foreground);
+    }
+
+    /* Challenges & Breakthroughs */
+    .challenge-list {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .challenge-item {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr);
+      gap: 16px;
+      border: 1px solid var(--border-soft);
+      border-radius: var(--radius);
+      padding: 16px 20px;
+      background: var(--background);
+    }
+
+    .challenge-left {
+      border-right: 1px solid var(--border-soft);
+      padding-right: 16px;
+    }
+
+    .challenge-kicker {
+      font-size: 0.79rem;
+      font-weight: 600;
+      color: var(--muted-foreground);
+      margin-bottom: 4px;
+    }
+
+    .challenge-kicker.breakthrough {
+      color: var(--fluid-accent);
+    }
+
+    /* Account Isolation */
+    .tier-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .tier-card {
+      border: 1px solid var(--border-soft);
+      border-top: 3px solid var(--fluid-accent);
+      border-radius: var(--radius);
+      padding: 16px 18px;
+      background: var(--background);
+    }
+
+    .tier-card.tier-red { border-top-color: var(--danger); }
+    .tier-card.tier-green { border-top-color: var(--green); }
+    .tier-card.tier-orange { border-top-color: var(--orange); }
+    .tier-card.tier-blue { border-top-color: var(--fluid-accent); }
+
+    .tier-card h3 {
+      margin: 0 0 6px;
+      font-size: 0.96rem;
+      font-weight: 600;
+    }
+
+    .tier-meta {
+      font-size: 0.81rem;
+      color: var(--muted-foreground);
+      margin-bottom: 10px;
+    }
+
+    .details-stack {
+      margin-top: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    details {
+      border: 1px solid var(--border-soft);
+      border-radius: var(--radius);
+      padding: 12px 16px;
+      background: var(--surface);
+    }
+
+    summary {
+      cursor: pointer;
+      font-weight: 600;
+      color: var(--foreground);
+      font-size: 0.9rem;
+    }
+
+    details[open] summary {
+      margin-bottom: 10px;
+    }
+
+    details ul {
+      margin: 0;
+      padding-left: 18px;
+      font-size: 0.86rem;
+      color: var(--muted-foreground);
+    }
+
+    details li {
+      margin-bottom: 6px;
+    }
+
+    .notice-bar {
+      padding: 14px 18px;
+      border-radius: var(--radius);
+      background: color-mix(in srgb, var(--fluid-accent) 7%, #FFFFFF);
+      border: 1px solid color-mix(in srgb, var(--fluid-accent) 22%, #FFFFFF);
+      font-size: 0.88rem;
+      color: var(--foreground);
+      margin-top: 14px;
+    }
+
+    @media (max-width: 1024px) {
+      .kpi-grid, .tier-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+      .grid-3, .optional-grid, .challenge-item {
+        grid-template-columns: 1fr;
+      }
+      .challenge-left {
+        border-right: none;
+        border-bottom: 1px solid var(--border-soft);
+        padding-right: 0;
+        padding-bottom: 12px;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .topbar-inner, .page {
+        padding-left: 14px;
+        padding-right: 14px;
+      }
+      .kpi-grid, .tier-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand-block">
+        <h1 class="brand-title">FBIF 2027 Visitor Acquisition &amp; Paid Media Plan (From Dec 2026)</h1>
+        <p class="brand-sub">Approved Goal: 68k–72k Registrations · ≥ 40,000 On-Site Attendees | Show Dates: 2027-04-21 to 04-23 | Includes 5-Tier Communities &amp; Conflict-Free Tasting Options</p>
+      </div>
+      <nav class="nav-tabs" aria-label="Section navigation">
+        <a class="nav-tab active" href="#flow">Master Workflow</a>
+        <a class="nav-tab" href="#gap">Target &amp; Breakthroughs</a>
+        <a class="nav-tab" href="#community">Community Playbook</a>
+        <a class="nav-tab" href="#isolation">Account Isolation</a>
+        <a class="nav-tab" href="#matrix">Execution Matrix</a>
+        <a class="nav-tab" href="#confirm">Decisions &amp; Open Items</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="page">
+
+    <!-- Executive KPI Strip -->
+    <section class="kpi-grid" aria-label="Key targets">
+      <div class="kpi-card">
+        <div class="kpi-label">Approved Volume &amp; Attendance Target</div>
+        <div class="kpi-value accent tabular">68k–72k → 40,000+</div>
+        <p class="kpi-desc">No hard cap at 60k; use referrals &amp; past-visitor reactivation to lock 40k+ attendance</p>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Gap vs. Historical Baseline</div>
+        <div class="kpi-value tabular">+14,000 Net Attendees</div>
+        <p class="kpi-desc">Prior year achieved 26.1k (43.2% show-up); paid media must lift from 27.8% to 50%+</p>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Four Core Growth Levers</div>
+        <div class="kpi-value">Voucher · Survey · Groups · Viral</div>
+        <p class="kpi-desc">Paid voucher filter + ID/survey ad feedback + 5-tier communities + zero-ad-cost referrals</p>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">December Kickoff Priorities</div>
+        <div class="kpi-value">Agencies · Vouchers · SOP · Pool</div>
+        <p class="kpi-desc">Select 3 agencies, secure DTC brand vouchers, finalize community SOP, isolate accounts</p>
+      </div>
+    </section>
+
+    <!-- Section 1: Master Workflow SVG -->
+    <section id="flow" class="section">
+      <div class="section-head">
+        <h2>1. End-to-End Master Workflow (2026-12 to 2027-04)</h2>
+        <p>Read top-to-bottom by phase and left-to-right by step. Branch logic and outcomes sit directly beneath each step; expand below for operational rules.</p>
+        <div class="legend" aria-label="Phase legend">
+          <span><i style="background:var(--blue)"></i>Dec: Rules, Agencies &amp; Vouchers</span>
+          <span><i style="background:var(--teal)"></i>Jan: Tech, Data &amp; Creatives</span>
+          <span><i style="background:var(--green)"></i>Mid-Feb to Mid-Apr: Multi-Channel Scale</span>
+          <span><i style="background:var(--purple)"></i>Ongoing: 5-Tier Communities &amp; Isolation</span>
+          <span><i style="background:var(--orange)"></i>Apr 11–30: Sprint, Attendance &amp; Settlement</span>
+        </div>
+      </div>
+
+      <div id="plan-process-map" class="canvas-wrap">
+        <svg class="process-drawing" role="img" aria-label="Five-phase horizontal workflow for FBIF 2027 visitor acquisition covering December setup, January build, post-CNY launch and scale-up, segmented post-registration communities with account isolation, and April sprint plus automated post-show voucher issuance and refunds."></svg>
+      </div>
+
+      <div class="details-stack">
+        <details>
+          <summary>Expand Details: Paid Visitor Pass (Brand Product Voucher) Rules &amp; Inventory Safeguards</summary>
+          <ul>
+            <li><strong>Dual-Track Ticketing</strong>: Free Trade Visitor Pass (3-day, verified) runs alongside Paid Visitor Pass with Brand Product Voucher (3-day, instant approval). Retention of the 1-day Free Consumer Pass remains pending final decision.</li>
+            <li><strong>Brand Sourcing &amp; Channel Rule</strong>: Target exhibitors, award entrants, and keynote speakers. Prioritize <strong>brand-owned DTC channels</strong> (official Mini-Programs / brand stores) rather than third-party marketplaces.</li>
+            <li><strong>Approved Refund &amp; Invoicing Rule</strong>: Self-service refund closes 7 business days before opening (2027-04-12). No manual refunds or invoicing during show days (04-21 to 04-23). Default to <strong>post-show invoicing upon verified gate entry only</strong>; no-shows receive automatic full refunds (04-25 to 04-27), eliminating invoice credit-note rework.</li>
+            <li><strong>Automated Voucher Delivery</strong>: Gate scan logs are reconciled on 04-24; verified attendees automatically receive redemption codes via SMS + Service Account AI support (with one auto-retry and self-service lookup).</li>
+            <li><strong>Anti-Oversell Protection</strong>: All voucher inventory sits in a single real-time pool deducted at checkout. At 80% utilization, BD receives an auto-alert to top up; at 100%, listings switch seamlessly to backup brands or a fallback bundle. Strictly 1 paid pass per mobile number / ID.</li>
+          </ul>
+        </details>
+        <details>
+          <summary>Expand Details: Four Mandatory Clauses for December Media Agency Selection</summary>
+          <ul>
+            <li><strong>Approved Mini-Program &amp; Data Sovereignty Floor</strong>: Test our own Mini-Program with server-side ad callbacks first. If a leading exhibition agency requires its proprietary Mini-Program to maximize Tencent V3 show-up algorithms, contracts must lock in: (1) full paid-voucher &amp; interest-counter support, and (2) real-time raw sync of mobile numbers and full survey fields into our master database.</li>
+            <li><strong>Pricing Metric Verification</strong>: Explicitly verify whether benchmark food-expo pricing (RMB 35–45/person) represents registration cost or on-site attendance cost, and tie it to the Mar 15 elimination gate (3 agencies start, keep top 2).</li>
+            <li><strong>Referral &amp; Reactivation Deduplication</strong>: Lock in zero ad-fee settlement for reactivated historical contacts (baseline encrypted upload in January) and organic peer referrals (industry peers achieve ~70 free registrations per 100 paid registrants).</li>
+            <li><strong>Channel Priority</strong>: Anchor core spend in WeChat / Tencent V3 (consistently highest show-up in 2025–2026). Keep Xiaohongshu DM AI-to-WeCom as baseline; decide on a small paid re-test after December agency pitches.</li>
+          </ul>
+        </details>
+      </div>
+    </section>
+
+    <!-- Section 2: Target Breakdown, Challenges & Breakthroughs -->
+    <section id="gap" class="section">
+      <div class="section-head">
+        <h2>2. Target Math (40,000+ Attendees), Five Core Challenges &amp; Breakthroughs</h2>
+        <p>Approved path raises total registrations to 68k–72k via zero-cost referrals and past-visitor reactivation, securing ≥ 40,000 verified attendees with practical safety margin.</p>
+      </div>
+
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>Scenario / Channel Mix</th>
+              <th class="num">Registrations</th>
+              <th class="num">Show-Up Rate</th>
+              <th class="num">On-Site Attendees</th>
+              <th>Feasibility &amp; Operational Focus</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                <div class="cell-title">Prior Year Actual Baseline</div>
+                <p class="cell-sub">Owned/Ticketing 26,350 + Paid Media/SMS 34,067</p>
+              </td>
+              <td class="num tabular">60,417</td>
+              <td class="num tabular">43.2%</td>
+              <td class="num tabular">26,108</td>
+              <td>Leaves a <strong>13,892-attendee deficit</strong>. Main drag: WeChat paid media show-up was only 24.5% with no post-registration community follow-up.</td>
+            </tr>
+            <tr class="row-confirmed">
+              <td>
+                <div class="cell-title">Approved Path: 68k–72k Regs to Guarantee 40k+ Attendees</div>
+                <p class="cell-sub">Private/SMS/Past Visitors 35,000 (70%) + Paid &amp; Viral 35,000 (48%–52%)</p>
+              </td>
+              <td class="num tabular">70,000</td>
+              <td class="num tabular">59.0%–61.0%</td>
+              <td class="num tabular">41,300–42,700</td>
+              <td><span class="ok-text">Approved Master Plan</span>: Peer referrals &amp; past-visitor reactivation lift volume at minimal cost; paid media hits 48%–52% via vouchers + deep surveys + communities.</td>
+            </tr>
+            <tr>
+              <td>
+                <div class="cell-title">Stress Line: Strict 60,000 Registration Cap</div>
+                <p class="cell-sub">Private/SMS 32,000 (75%) + Paid Media 28,000 (58%)</p>
+              </td>
+              <td class="num tabular">60,000</td>
+              <td class="num tabular">67.1%</td>
+              <td class="num tabular">40,240</td>
+              <td><span class="danger-text">Zero-Margin Alert</span>: If post-CNY referral velocity stalls near 60k, immediately tighten free consumer tickets and deploy stronger buyer/VIP hooks.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div style="height:20px"></div>
+
+      <div class="challenge-list">
+        <div class="challenge-item">
+          <div class="challenge-left">
+            <div class="challenge-kicker">Challenge 1 · Doubling Paid Show-Up Rate</div>
+            <div class="cell-title">Paid media show-up must jump from 27.8% to ~50%</div>
+            <p class="cell-sub">Last year stripped survey questions to chase raw registration counts, pulling in low-intent leads and dragging down attendance.</p>
+          </div>
+          <div>
+            <div class="challenge-kicker breakthrough">Breakthrough 1 · Paid Voucher Filter + Deep Survey Algorithm Feedback</div>
+            <p class="cell-sub">Reinstate real-name ID checks plus a 5–6 question structured trade survey fed back to Tencent V3 lookalike models (proven at 47%–55% show-up in comparable expos), paired with paid product-voucher passes and zero-cost peer referrals.</p>
+          </div>
+        </div>
+
+        <div class="challenge-item">
+          <div class="challenge-left">
+            <div class="challenge-kicker">Challenge 2 · 2-Month Cooling Gap &amp; Audience Mismatch</div>
+            <div class="cell-title">One-size-fits-all reminders alienate executives and bore buyers</div>
+            <p class="cell-sub">Early registrants registered in Feb–Mar forget by Apr 21; blasting identical promotional copy drives C-suite opt-outs while failing to answer voucher buyer questions.</p>
+          </div>
+          <div>
+            <div class="challenge-kicker breakthrough">Breakthrough 2 · Automated 5-Tier Community Nurturing</div>
+            <p class="cell-sub">Capture 70%–80% of registrants into a dedicated WeCom pool within 5 seconds of registration, auto-route by survey role into 5 distinct communities with tailored frequency and hooks, adding +10–15 pts to attendance.</p>
+          </div>
+        </div>
+
+        <div class="challenge-item">
+          <div class="challenge-left">
+            <div class="challenge-kicker">Challenge 3 · Account Bans &amp; Cross-Contamination Risk</div>
+            <div class="cell-title">High-volume community onboarding &amp; 1-on-1 blasts threaten core sales accounts</div>
+            <p class="cell-sub">WeChat enforces tight friend-add and messaging ceilings; mixing bulk outreach with core sales accounts risks cascading bans across company assets.</p>
+          </div>
+          <div>
+            <div class="challenge-kicker breakthrough">Breakthrough 3 · Physical 4-Zone Isolation + Official Channel Offload</div>
+            <p class="cell-sub">Keep core sales accounts untouched (Red Zone); isolate communities on a separate WeCom entity with 10-seat routing (Green Zone); run bulk 1-on-1 blasts on dedicated devices/SIMs with 30% warm backups (Amber Zone); move 70% of routine notices to SMS + Service Account AI (Blue Zone).</p>
+          </div>
+        </div>
+
+        <div class="challenge-item">
+          <div class="challenge-left">
+            <div class="challenge-kicker">Challenge 4 · Tasting Promo vs. On-Site Paid Tasting Revenue</div>
+            <div class="cell-title">Free tasting giveaways can cannibalize paid tasting sales &amp; clog peak queues</div>
+            <p class="cell-sub">Giving unrestricted "first-come, first-served" free tasting slots risks converting paying buyers into freebie seekers, crowding 11:00–15:00 peak hours, and sparking internal quota disputes.</p>
+          </div>
+          <div>
+            <div class="challenge-kicker breakthrough">Breakthrough 4 · Conflict-Free Tasting Design (Off-Peak / Sample-to-Sale / Internal Buyout)</div>
+            <p class="cell-sub">Never promote free tastings publicly. Limit as an invite-only perk inside C-Suite/Buyer groups using one of 3 revenue-safe models: off-peak/surplus time slots, single-sample or discount vouchers that drive paid upsells, or fixed internal cost-price buyouts with 15:00 auto-release.</p>
+          </div>
+        </div>
+
+        <div class="challenge-item">
+          <div class="challenge-left">
+            <div class="challenge-kicker">Challenge 5 · Data Sovereignty &amp; Voucher Fulfillment Risk</div>
+            <div class="cell-title">Agency Mini-Programs vs. unified master data, plus voucher oversell &amp; invoice rework</div>
+            <p class="cell-sub">Fragmented registration systems break deduplication; uncapped hot brand vouchers cause fulfillment crises; pre-show invoicing forces mass credit notes on no-show refunds.</p>
+          </div>
+          <div>
+            <div class="challenge-kicker breakthrough">Breakthrough 5 · Contracted Real-Time Sync + 80% Pool Lock + Post-Show Invoicing</div>
+            <p class="cell-sub">Approved rules lock real-time data sync into one master sheet, real-time inventory deduction with 80% BD top-up alerts &amp; 100% fallback bundles, and post-show invoicing strictly after verified gate scan.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 3: 5-Tier Community Playbook & Conflict-Free Tasting -->
+    <section id="community" class="section">
+      <div class="section-head">
+        <h2>3. Post-Registration Community Playbook: 5 Segments, 5 Distinct Strategies</h2>
+        <p>Core Rule: <strong>Auto-tag from registration survey → Assign each visitor to exactly one community by strict priority (C-Suite &gt; Buyers &gt; Brands/OEM &gt; Paid Voucher &gt; Free Consumer) → Operate each tier with distinct cadence, content, and attendance hooks.</strong></p>
+      </div>
+
+      <div class="grid-3" style="margin-bottom:16px">
+        <div class="card-soft">
+          <h3>5-Second Capture Funnel</h3>
+          <p>Confirmation page immediately prompts adding a Green-Zone WeCom routing QR to unlock curated guides or voucher alerts, backed by 1 reminder SMS at 24h. Target acceptance rate: <strong>70%–80%</strong>.</p>
+        </div>
+        <div class="card-soft">
+          <h3>Single-Group Priority (Zero Duplication)</h3>
+          <p>Example: A Retail Buying Director who buys a Paid Voucher Pass enters the <strong>Buyers Group</strong> only—never duplicated into the generic Voucher Group. Voucher alerts layer on via user tags + Service Account/SMS.</p>
+        </div>
+        <div class="card-soft">
+          <h3>Lean Staffing Model</h3>
+          <p>1–2 dedicated community operators backed by compliant WeCom automation (welcome routing, scheduled drops, AI FAQ bot). Full messaging calendar and SOP finalized with Community Lead by end of December.</p>
+        </div>
+      </div>
+
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>Community Tier &amp; Priority</th>
+              <th>Survey Routing Criteria</th>
+              <th>Core Motivation &amp; Tone</th>
+              <th>Cadence &amp; Effort</th>
+              <th>Pre-Show Nurturing (T-30 to T-14)</th>
+              <th>T-7 Attendance Hook</th>
+              <th>On-Site &amp; Post-Show</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="row-highlight">
+              <td>
+                <div class="cell-title">1. C-Suite &amp; Founders</div>
+                <p class="cell-sub">Priority 1 · High-Value, Curated</p>
+              </td>
+              <td>Founder / CEO / Partner / VP / BU General Manager</td>
+              <td><strong>Strategic clarity &amp; time efficiency</strong>; zero tolerance for spam or cheap giveaway copy.</td>
+              <td><strong>Ultra-low frequency</strong>: ≤ 1 high-signal drop/week; selective human concierge at key milestones.</td>
+              <td>Share strategic warning-style industry briefs, 2nd growth curve &amp; tech-moat spotlights, and keynote/top-exhibitor executive previews.</td>
+              <td>VIP fast-track badge guide + <strong>(Optional) conflict-free invite-only executive tasting privilege</strong>.</td>
+              <td>Curated forum &amp; closed-door reminders on-site; post-show executive trend digest to retain annual VIP pool.</td>
+            </tr>
+            <tr class="row-highlight">
+              <td>
+                <div class="cell-title">2. Retail &amp; Channel Buyers</div>
+                <p class="cell-sub">Priority 2 · Ecosystem Anchor</p>
+              </td>
+              <td>Supermarket / CVS / Discount Chains / E-Commerce / Distributors / Export Buyers</td>
+              <td><strong>Sourcing efficiency &amp; hit-product discovery</strong>; securing buyers pulls brands &amp; exhibitors naturally.</td>
+              <td><strong>Mid-frequency utility</strong>: 2 curated drops/week; automated schedule + Channel Team Q&amp;A.</td>
+              <td>Drop 650+ global new-SKU previews by category, private buyer matchmaking approval links, free Sourcing Directory (with contacts), and 1-on-1 exhibitor pre-booking.</td>
+              <td>Confirmed matchmaking slot + limited print Sourcing Directory + <strong>(Optional) conflict-free buyer tasting privilege</strong>.</td>
+              <td>Live hot-SKU booth alerts &amp; matchmaking check-in cues; post-show directory of unvisited suppliers.</td>
+            </tr>
+            <tr>
+              <td>
+                <div class="cell-title">3. Brands, R&amp;D &amp; OEM/ODM</div>
+                <p class="cell-sub">Priority 3 · Core Trade Base</p>
+              </td>
+              <td>F&amp;B Brands (R&amp;D / Marketing / Product / Sales) &amp; Contract Manufacturers</td>
+              <td><strong>New channel access (incl. overseas), R&amp;D trends &amp; technical differentiation</strong>.</td>
+              <td><strong>Mid-frequency interactive</strong>: 2 drops/week + structured polls feeding demand data back to exhibitor sales.</td>
+              <td>Deliver overseas/channel expansion briefs, packaging &amp; R&amp;D innovation showcases, and supply-chain tech barrier cases; run "Top 3 Categories to Visit" polls.</td>
+              <td>Print-edition Trend Bluebook &amp; Zone Guide pickup + tailored R&amp;D / Export walking routes.</td>
+              <td>Live innovation &amp; packaging zone highlights to pull Day 2–3 visits; migrate into year-round industry groups.</td>
+            </tr>
+            <tr>
+              <td>
+                <div class="cell-title">4. Paid Voucher Pass Holders</div>
+                <p class="cell-sub">Priority 4 · High-Commitment Pool</p>
+              </td>
+              <td>Paid Voucher Pass buyers not already routed to Tiers 1–3</td>
+              <td><strong>Certainty &amp; high perceived value</strong>: confirm voucher worth, redemption steps, and no-risk refund policy.</td>
+              <td><strong>Automated + AI-first</strong>: 2 product previews/week; AI bot handles 90% of ticket/refund FAQs.</td>
+              <td>Showcase participating DTC brand products, live "Most Added-to-Cart" rankings, and crystal-clear visual guides on Apr 12 refund cutoff &amp; auto-fulfillment rules.</td>
+              <td><strong>Direct economic trigger</strong>: "Your DTC brand voucher is reserved—scan your ID at the gate from Apr 21 to auto-unlock post-show."</td>
+              <td>Day-1 booth &amp; sample buzz photos; Apr 24–27 voucher code delivery &amp; refund status updates + self-service AI lookup.</td>
+            </tr>
+            <tr>
+              <td>
+                <div class="cell-title">5. General / Free Consumers</div>
+                <p class="cell-sub">Optional · Only if Free Consumer Pass stays</p>
+              </td>
+              <td>1-Day Free Consumer Pass (unverified)</td>
+              <td><strong>On-site discovery &amp; experiential perks</strong>; volatile show-up—must require zero manual labor.</td>
+              <td><strong>100% automated</strong>: scheduled bot drops + AI FAQ only; no dedicated human headcount.</td>
+              <td>Auto-send interactive zone guides and viral snack highlights; at T-14, trigger an automated upsell nudge to upgrade to the 3-day Paid Voucher Pass (risk-free auto-refund if absent).</td>
+              <td>Entry logistics + final upgrade prompt to lock higher show-up commitment.</td>
+              <td>Day-1 crowd &amp; showcase highlights to drive local impulse attendance; auto-archive post-show.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Conflict-Free Optional Tasting Hook -->
+      <div class="optional-box">
+        <h3>Optional Attendance Hook (Conflict-Free Redesign): Protecting Paid Tasting Sales While Lifting C-Suite &amp; Buyer Attendance</h3>
+        <p><strong>Why redesign?</strong> Offering unrestricted free tasting slots risks cannibalizing paying customers, congesting peak selling hours (11:00–15:00), and creating quota friction if sales surge. If management approves linking the tasting zone, adopt one of the three revenue-safe models below—strictly invite-only inside Tier 1 &amp; 2 communities, never advertised publicly.</p>
+        <div class="optional-grid">
+          <div class="optional-cell">
+            <strong>Option A (Recommended): Off-Peak &amp; Surplus Allocation</strong>
+            Keep peak hours (<strong>11:00–15:00</strong>) 100% reserved for full-price sales. Open invite-only slots during <strong>09:30–10:30</strong> (builds early crowd energy) and <strong>15:30–16:30</strong> (converts daily perishable surplus with zero waste).
+          </div>
+          <div class="optional-cell">
+            <strong>Option B (Revenue-Accretive): Taster Sample or Credit Voucher</strong>
+            Instead of gifting full paid tasting packages, issue a <strong>single-item preview sample or RMB 15–20 off credit</strong>. VIPs still receive a clear perk while driving incremental paid conversions directly to the tasting booth.
+          </div>
+          <div class="optional-cell">
+            <strong>Option C (Zero Friction): Internal Cost-Price Buyout</strong>
+            Visitor acquisition budget buys a <strong>fixed daily block (e.g., 50–100 slots) at internal cost</strong>. Tasting team secures guaranteed revenue; any unredeemed slots auto-release at 15:00 for regular paid resale.
+          </div>
+        </div>
+        <div class="optional-foot"><strong>Rollout Guardrail:</strong> Pending leadership approval of the tasting business plan; keep Day 1 (Apr 21) redemption rules strict and tune Day 2–3 capacity based on live Day-1 sales velocity.</div>
+      </div>
+    </section>
+
+    <!-- Section 4: Account Isolation -->
+    <section id="isolation" class="section">
+      <div class="section-head">
+        <h2>4. Four-Zone Account Isolation &amp; Anti-Ban Architecture (Zero Spillover Risk)</h2>
+        <p>Hard Rule: <strong>Core business accounts never run bulk blasts; community accounts stay strictly compliant on an isolated WeCom entity; bulk 1-on-1 outreach uses physically separated burner pools; routine notices offload to zero-ban official channels.</strong></p>
+      </div>
+
+      <div class="tier-grid">
+        <div class="tier-card tier-red">
+          <h3>Red Zone · Core Business Assets</h3>
+          <div class="tier-meta">Sales Leads / BD / Executives / Key Client Accounts</div>
+          <ul class="cell-list">
+            <li><strong>Permitted</strong>: Authentic 1-on-1 relationship management, VIP follow-up, and normal Moments updates.</li>
+            <li><strong>Hard Ban</strong>: Zero third-party automation plugins; zero public-ad lead routing; zero mass 1-on-1 blasting.</li>
+            <li><strong>Result</strong>: Completely insulated from user complaints and platform penalties.</li>
+          </ul>
+        </div>
+
+        <div class="tier-card tier-green">
+          <h3>Green Zone · Community Service Pool</h3>
+          <div class="tier-meta">Isolated Sub-Entity WeCom + 10-Seat Official Routing QR</div>
+          <ul class="cell-list">
+            <li><strong>Mission</strong>: Absorb post-registration friend adds, auto-route into the 5 communities, run scheduled drops &amp; AI FAQ.</li>
+            <li><strong>Compliance</strong>: Official WeCom live codes, official welcome messages, and native group broadcasts only—zero grey-hat automation.</li>
+            <li><strong>Isolation</strong>: Hosted under a separate WeCom entity so complaints never impact main corporate WeCom.</li>
+          </ul>
+        </div>
+
+        <div class="tier-card tier-orange">
+          <h3>Amber Zone · 1-on-1 Outreach Pool</h3>
+          <div class="tier-meta">Dedicated Phones + Independent SIMs + 30% Warm Backups</div>
+          <ul class="cell-list">
+            <li><strong>Mission</strong>: Execute high-frequency 1-on-1 ticket invites, private blasts, and reactivation nudges.</li>
+            <li><strong>Physical Separation</strong>: Dedicated hardware, cellular data (off corporate Wi-Fi), and separate IDs—<strong>zero cross-account contagion</strong> if a single seat is restricted.</li>
+            <li><strong>Safety SOP</strong>: Warm up accounts 30 days ahead; pilot every wave on 500 users; separate text &amp; poster sends; strictly deduplicate registrants before every send.</li>
+          </ul>
+        </div>
+
+        <div class="tier-card tier-blue">
+          <h3>Blue Zone · Zero-Ban Official Channels</h3>
+          <div class="tier-meta">SMS Gateway + WeChat Service Account Templates + AI Support</div>
+          <ul class="cell-list">
+            <li><strong>Mission</strong>: Handle verification results, 4-wave pre-show attendance reminders, post-show voucher code dispatch, auto-refund alerts, and self-service queries.</li>
+            <li><strong>Impact</strong>: Offloads ~70% of mechanical messaging away from personal/WeCom accounts while leveraging SMS's proven 50.3% show-up efficiency.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="notice-bar">
+        <strong>Automated Circuit Breaker:</strong> Track daily friend-accept rate, complaint count, and delivery failures across Green &amp; Amber pools. If any account shows throttling, repeated captchas, or ≥ 2 complaints/day, <strong>auto-freeze for 48 hours</strong> and fail over live QR traffic to the 30% warm backup pool within 60 seconds.
+      </div>
+    </section>
+
+    <!-- Section 5: Execution Matrix -->
+    <section id="matrix" class="section">
+      <div class="section-head">
+        <h2>5. Execution Matrix: Three Acquisition Tracks × Four Operational Phases</h2>
+        <p>Completes the execution grid from December 2026 through April 2027 across Paid Media, Private 1-on-1 Outreach, and SMS.</p>
+      </div>
+
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>Channel Track</th>
+              <th>1. Planning &amp; Prep (Dec – Jan)</th>
+              <th>2. Acquisition Execution (Feb 15 – Apr 22)</th>
+              <th>3. Weekly Review &amp; Optimization</th>
+              <th>4. Attendance Conversion (Apr 14 – 23)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><div class="cell-title">Paid Media</div><p class="cell-sub">Primary Growth Engine</p></td>
+              <td>
+                <ul class="cell-list">
+                  <li>Select 3 WeChat agencies in Dec; contractually lock data sync, referral, &amp; reactivation clauses.</li>
+                  <li>Launch dual-pass landing pages, live view/cart counters, 4 creative sets (clean horizontal, product+human 9-grid, short video, voucher promos), and multi-account structure in Jan.</li>
+                  <li>Budget pacing: Launch 10% → Scale 15% → Sprint &amp; Show 75%+.</li>
+                </ul>
+              </td>
+              <td>
+                <ul class="cell-list">
+                  <li><strong>Feb 15–Mar 15 (Launch)</strong>: 10-day cold start across 3 agencies testing paid voucher + deep survey + strategic/trend/export hooks; cut bottom performer on Mar 15.</li>
+                  <li><strong>Mar 16–Apr 10 (Scale)</strong>: Scale winning creatives across multiple ad accounts; rotate fresh angles to prevent duplicate throttling.</li>
+                  <li><strong>Apr 11–Apr 22 (Sprint)</strong>: Freeze new production; push 75%+ budget into proven winners + viral referral loop toward 68k–72k total regs.</li>
+                </ul>
+              </td>
+              <td>
+                <ul class="cell-list">
+                  <li>Lock daily cap on profitable ad accounts and open new accounts to scale—never uncap a single account blindly (prevents CPA spikes).</li>
+                  <li>Review Paid vs. Free conversion, estimated refunds, and top-clicked brand vouchers weekly; feed hot categories to BD &amp; Exhibitor Sales.</li>
+                  <li>Pause creatives exceeding CPA ceiling for 3 consecutive days.</li>
+                </ul>
+              </td>
+              <td>
+                <ul class="cell-list">
+                  <li>Route 70%–80% of registrants into Green-Zone 5-tier communities within 5 seconds of checkout/signup.</li>
+                  <li>Trigger Service Account + AI voucher unlock alerts on Apr 18 &amp; Apr 20; layer optional tasting perk for Tier 1–2.</li>
+                </ul>
+              </td>
+            </tr>
+            <tr>
+              <td><div class="cell-title">Private 1-on-1</div><p class="cell-sub">High-Show-Up Anchor</p></td>
+              <td>
+                <ul class="cell-list">
+                  <li>Audit all company accounts by end of Dec; strictly segregate Red Zone (core) vs. Amber Zone (isolated outreach) and warm up 30% backups in Jan.</li>
+                  <li>Draft role-based scripts (C-Suite / Buyers / Brands / OEM) synced off-peak with sales closing windows.</li>
+                  <li>Trim low-ROI invite tracks; concentrate effort on 1-on-1 and streamlined exhibitor sharing.</li>
+                </ul>
+              </td>
+              <td>
+                <ul class="cell-list">
+                  <li><strong>Feb 15–Mar 15</strong>: Sales assistants, Channel, and Community teams launch Wave 1 targeted 1-on-1 outreach immediately post-CNY.</li>
+                  <li><strong>Mar 20–Apr 3</strong>: Pilot 500-user Amber batches (decoupled text &amp; poster sends); invite curated Brands/OEMs to buyer matchmaking.</li>
+                  <li><strong>Apr 4–Apr 13</strong>: Full-list push with Bluebook/Directory/Voucher hooks; prompt self-managed internal accounts.</li>
+                  <li><strong>Apr 14–Apr 20</strong>: Urgency wave ("Expiring Next Week"); ramp Moments to 1–3x/day; activate public official-account fallback if behind pace.</li>
+                </ul>
+              </td>
+              <td>
+                <ul class="cell-list">
+                  <li>Track reach, claims, and conversion rate per team/account (benchmark: 0.8%–1.2% per wave).</li>
+                  <li>Monitor Amber account health daily; enforce 48h auto-freeze and hot-swap on any warning.</li>
+                  <li>Deduplicate against master sheet before every wave; pass high-intent replies to sales.</li>
+                </ul>
+              </td>
+              <td>
+                <ul class="cell-list">
+                  <li>T-7 (Apr 14) and T-1 (Apr 20) Moments blitz + personalized attendance check-ins for registered VIPs/buyers.</li>
+                  <li>Reinforce on-site hooks: buyer matchmaking, print Bluebook, brand vouchers, and (optional) tasting access.</li>
+                </ul>
+              </td>
+            </tr>
+            <tr>
+              <td><div class="cell-title">SMS</div><p class="cell-sub">Highest-ROI Direct Reach</p></td>
+              <td>
+                <ul class="cell-list">
+                  <li>Consolidate, clean, and tag all valid company mobile numbers across prior expos, website, and events in Jan.</li>
+                  <li>A/B test 3 SMS copy angles (sourcing efficiency / expiring offer / auto-unlocked brand voucher).</li>
+                  <li>Schedule 8–10 waves within an estimated RMB 150k–200k budget.</li>
+                </ul>
+              </td>
+              <td>
+                <ul class="cell-list">
+                  <li><strong>Mar 25–Apr 16 (5–6 Registration Waves)</strong>: Cadence every 4–5 days; run dedicated drops for newly acquired contact lists.</li>
+                  <li><strong>Strict Guardrail</strong>: Sync against the unified master database 1 hour prior—never send registration SMS to already-registered or paid visitors.</li>
+                </ul>
+              </td>
+              <td>
+                <ul class="cell-list">
+                  <li>Audit delivery rate, CTR, registration CPA, and projected attendance CPA 24h after each wave.</li>
+                  <li>Retire low-CTR copy; concentrate high-converting templates in the final 10-day sprint.</li>
+                </ul>
+              </td>
+              <td>
+                <ul class="cell-list">
+                  <li><strong>Apr 15 / 18 / 20 / 21 (4 Attendance Waves)</strong>: Tailored reminders split by Trade vs. Paid Voucher holders.</li>
+                  <li><strong>Apr 24–25 Auto-Fulfillment</strong>: Dispatch DTC voucher codes via SMS to gate-verified attendees; trigger refund notices for no-shows.</li>
+                </ul>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Section 6: Approved Decisions & Open Items -->
+    <section id="confirm" class="section">
+      <div class="section-head">
+        <h2>6. Decision Tracker: Approved Floors (3) &amp; Open Items (7)</h2>
+        <p>Green rows reflect locked baseline decisions. Remaining 7 items follow December milestones across agency pitches, BD brand sourcing, and leadership sign-off.</p>
+      </div>
+
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Status</th>
+              <th>Decision Item</th>
+              <th>Locked Rule / Trade-Off Summary</th>
+              <th>Target Date</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="row-confirmed">
+              <td class="tabular">1</td>
+              <td><span class="ok-text">Approved</span></td>
+              <td><div class="cell-title">Volume &amp; Attendance Target Policy</div></td>
+              <td>No hard ceiling at 60k registrations; scale to <strong>68k–72k</strong> via referrals &amp; past-visitor reactivation to guarantee <strong>40,000+ on-site attendees</strong>.</td>
+              <td class="tabular">Locked</td>
+            </tr>
+            <tr class="row-confirmed">
+              <td class="tabular">2</td>
+              <td><span class="ok-text">Approved</span></td>
+              <td><div class="cell-title">Mini-Program &amp; Data Sovereignty Floor</div></td>
+              <td>Test proprietary Mini-Program with server callbacks first; if a lead agency requires its own Mini-Program, contractually lock Paid Voucher hosting + real-time raw sync to our master sheet.</td>
+              <td class="tabular">Locked</td>
+            </tr>
+            <tr class="row-confirmed">
+              <td class="tabular">3</td>
+              <td><span class="ok-text">Approved</span></td>
+              <td><div class="cell-title">Paid Pass Invoicing &amp; Auto-Refund Timing</div></td>
+              <td>Default to <strong>post-show invoicing upon verified gate entry only</strong>; no-shows receive automatic full refunds, eliminating bulk credit-note rework.</td>
+              <td class="tabular">Locked</td>
+            </tr>
+            <tr>
+              <td class="tabular">4</td>
+              <td><span class="accent-text">Pending</span></td>
+              <td><div class="cell-title">Keep or Retire Free Consumer Pass?</div></td>
+              <td>Keeping it dilutes overall show-up (requires zero-touch Tier 5 bot upsell); retiring it channels consumers directly into the Paid Voucher Pass.</td>
+              <td class="tabular">Dec 10</td>
+            </tr>
+            <tr>
+              <td class="tabular">5</td>
+              <td><span class="accent-text">Pending</span></td>
+              <td><div class="cell-title">Xiaohongshu: Organic DM Only vs. Small Paid Re-Test</div></td>
+              <td>Maintain DM AI-to-WeCom as baseline; decide whether to allocate RMB 50k–100k for a Feb Paid Voucher test after December agency pitches.</td>
+              <td class="tabular">Dec 15</td>
+            </tr>
+            <tr>
+              <td class="tabular">6</td>
+              <td><span class="accent-text">Pending</span></td>
+              <td><div class="cell-title">Paid Pass Pricing &amp; DTC Voucher Value Ratio</div></td>
+              <td>Finalize price point after December BD brand outreach (working reference: RMB 29–49 ticket paired with ≥ 2x face value in DTC brand vouchers).</td>
+              <td class="tabular">Dec 20</td>
+            </tr>
+            <tr>
+              <td class="tabular">7</td>
+              <td><span class="accent-text">Pending</span></td>
+              <td><div class="cell-title">Sync Paid Voucher Pass on Main Ticketing Portal</div></td>
+              <td>Recommended for price consistency across organic &amp; private channels, provided both portals share one real-time inventory pool and 80% alert.</td>
+              <td class="tabular">Dec 20</td>
+            </tr>
+            <tr>
+              <td class="tabular">8</td>
+              <td><span class="accent-text">Pending · Optional</span></td>
+              <td><div class="cell-title">Conflict-Free Tasting Perk for C-Suite &amp; Buyers</div></td>
+              <td>Choose among Off-Peak/Surplus (Option A), Sample/Discount Credit (Option B), or Internal Cost Buyout (Option C)—or omit—subject to management review of the tasting sales plan.</td>
+              <td class="tabular">Late Dec</td>
+            </tr>
+            <tr>
+              <td class="tabular">9</td>
+              <td><span class="accent-text">Pending</span></td>
+              <td><div class="cell-title">5–6 Question Standard Trade Survey Schema</div></td>
+              <td>Lock ID verification + structured single-select fields (role, channel/category, seniority, sourcing goal) powering Tencent V3 feedback, 5-tier community routing, and exhibitor sales insights.</td>
+              <td class="tabular">Dec 25</td>
+            </tr>
+            <tr>
+              <td class="tabular">10</td>
+              <td><span class="accent-text">Pending</span></td>
+              <td><div class="cell-title">Account Isolation &amp; WeCom Tooling Budget</div></td>
+              <td>Approve isolated Green-Zone WeCom entity + 10-seat routing tools, plus Amber-Zone dedicated devices/SIMs (with 30% warm backups) for Jan 1 warm-up.</td>
+              <td class="tabular">Dec 31</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    (() => {
+      const navLinks = Array.from(document.querySelectorAll('.nav-tab'));
+      const sections = navLinks.map(a => document.querySelector(a.getAttribute('href'))).filter(Boolean);
+      const observer = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            navLinks.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + entry.target.id));
+          }
+        });
+      }, { rootMargin: '-25% 0px -65% 0px' });
+      sections.forEach(s => observer.observe(s));
+
+      const root = document.getElementById('plan-process-map');
+      const svg = root.querySelector('.process-drawing');
+      const ns = 'http://www.w3.org/2000/svg';
+      const measure = document.createElement('canvas').getContext('2d');
+
+      const phases = [
+        {
+          name: 'Dec Setup',
+          who: 'Lead / BD / Tech / Community · 2026-12-01 to 12-31',
+          color: '--blue',
+          steps: [
+            {
+              title: 'Lock Tickets & Policy',
+              nodes: [
+                { title: 'Dual-Track Pass Structure', lines: ['Paid Voucher Pass: 3-day, no review', 'Free Trade Pass: 3-day, verified', 'Consumer pass & price set by late Dec'] },
+                { title: 'Approved Target & Billing', lines: ['Push 68k–72k regs to lock 40k+ show-up', 'Post-show invoicing only; refunds close Apr 12'], kind: 'notice' }
+              ]
+            },
+            {
+              title: 'Select 3 Media Agencies',
+              nodes: [
+                { title: 'Shortlist 3 Tencent V3 Partners', lines: ['Verify RMB 35–45 reg vs. attendee metric', 'Own Mini-Program first; or lock real-time sync', 'Mandate paid-voucher & cart display support'] },
+                { title: 'Contract Viral & Dedup Terms', lines: ['Zero ad fee on past-visitor reactivation', 'Free peer referrals; XHS test set post-pitch'] }
+              ]
+            },
+            {
+              title: 'BD Brand Voucher Sourcing',
+              nodes: [
+                { title: 'Exhibitors, Awards & Speakers', lines: ['Prioritize DTC brand stores / Mini-Programs', 'Exclude 3rd-party marketplaces'] },
+                { title: 'Inventory & Optional Tasting', lines: ['Trade landing-page traffic data for vouchers', 'Align conflict-free tasting option with mgmt'] }
+              ]
+            },
+            {
+              title: 'Community SOP & Isolation',
+              nodes: [
+                { title: 'Finalize 5-Tier Playbook', lines: ['Define distinct cadence & hooks per tier', 'Confirm WeCom tools & 1–2 operators'] },
+                { title: 'Audit & Tier Company Accounts', lines: ['Separate Red Core vs. Green WeCom pool', 'Budget Amber dedicated phones & SIMs'] }
+              ]
+            }
+          ],
+          note: 'December decides the year: lock agency data-sync clauses, DTC brand voucher supply, 5-tier community SOPs, and account isolation before build begins.'
+        },
+        {
+          name: 'Jan Build',
+          who: 'Tech / Design / Media / Private Ops · 2027-01-01 to 02-04 (Pre-CNY)',
+          color: '--teal',
+          steps: [
+            {
+              title: 'Mini-Program & Inventory',
+              nodes: [
+                { title: 'Dual-Pass UX & Social Proof', lines: ['Track total views & SKU click-throughs', 'Display live "Added to Cart" counters'] },
+                { title: 'Real-Time Pool & 80% Alert', lines: ['Deduct stock at checkout; 100% fallback swap', 'Cap at 1 paid pass per mobile / ID'] }
+              ]
+            },
+            {
+              title: 'Master DB & Callback QA',
+              nodes: [
+                { title: 'Single Mobile-Keyed Master Sheet', lines: ['Unify Ads, Ticketing, Invites, SMS & Gates', 'Power real-time dedup & post-show settlement'] },
+                { title: '3-Agency Callback Stress Test', lines: ['Test 5–6 question survey & Tencent V3 sync', 'Pre-open multi-account ad structure'] }
+              ]
+            },
+            {
+              title: 'Creatives & Role Scripts',
+              nodes: [
+                { title: 'Launch-Ready Creative Bank', lines: ['Clean horizontal + product/human 9-grid', 'Short-form video + voucher offer visuals'] },
+                { title: 'Role-Specific Messaging', lines: ['Strategic briefs for CEOs; sourcing for Buyers', 'Export trends for Brands; tagged 1-on-1 copy'] }
+              ]
+            },
+            {
+              title: 'Warm-Up & SMS Hygiene',
+              nodes: [
+                { title: '30-Day Account Warm-Up', lines: ['Stress-test 10-seat Green WeCom routing QR', 'Warm Amber pool + 30% hot backup seats'] },
+                { title: 'Clean Master Phone Database', lines: ['Scrub dead numbers & enrich role tags', 'Pilot 3 SMS angles on small test cohorts'] }
+              ]
+            }
+          ],
+          note: 'Finish all API callbacks, voucher pool QA, creative production, and 30-day account warm-up before CNY (2027-02-06) for an immediate Day-1 launch.'
+        },
+        {
+          name: 'Scale-Up',
+          who: 'Paid Media / Sales / Channel / Community · 2027-02-15 to 04-10 (T-65 to T-11)',
+          color: '--green',
+          steps: [
+            {
+              title: 'Feb 15–Mar 15 Cold Start',
+              nodes: [
+                { title: 'Paid: 10-Day 3-Agency Launch', lines: ['Test paid voucher + deep survey conversion', 'Mar 15 cut: retain top 2 agencies'] },
+                { title: 'Private: Wave 1 1-on-1 Launch', lines: ['Sales, Channel & Community kick off invites', 'Staggered around core sales closing windows'] }
+              ]
+            },
+            {
+              title: 'Mar 16–31 Scale & Pilot',
+              nodes: [
+                { title: 'Paid: Multi-Account Scaling', lines: ['Lock winning account caps; scale via new IDs', 'Refresh angles to avoid duplicate throttling'] },
+                { title: 'Private: 500-User Amber Pilot', lines: ['Decouple text & poster sends across waves', 'Invite curated Brands/OEMs to matchmaking'] }
+              ]
+            },
+            {
+              title: 'Apr 1–10 Full Rollout & SMS',
+              nodes: [
+                { title: 'Paid: Lock Wave-2 Winners', lines: ['Feed top-clicked categories back to BD/Sales', 'Alert BD early to replenish hot brand vouchers'] },
+                { title: 'Private + SMS Multi-Waves', lines: ['Push Bluebook, Directory & DTC voucher hooks', 'SMS every 4–5 days; strictly exclude registrants'] }
+              ]
+            },
+            {
+              title: 'Viral & Past-Visitor Boost',
+              nodes: [
+                { title: 'Zero-Cost Peer Referral Loop', lines: ['Target ~70 viral regs per 100 paid signups', 'Lift total registration pool toward 68k–72k'] },
+                { title: 'Past-Visitor Reactivation', lines: ['Re-engage verified historical high-intent base', 'Keep high-show-up owned share above 50%'] }
+              ]
+            }
+          ],
+          note: 'Fixed Sunday reviews: never blindly uncap single ad accounts; deduplicate SMS 1h before dispatch; build safety margin via referrals & past-visitor reactivation.'
+        },
+        {
+          name: 'Community',
+          who: 'Community Ops (1–2 FTE) / WeCom / AI Support · Post-Registration Ongoing',
+          color: '--purple',
+          steps: [
+            {
+              title: '5-Sec WeCom Capture',
+              nodes: [
+                { title: 'Green 10-Seat Live QR Routing', lines: ['Confirmation page offers guides/voucher alerts', 'Target 70%–80% friend-acceptance rate'] },
+                { title: 'Single-Group Priority Routing', lines: ['C-Suite > Buyers > Brands > Paid Voucher', 'Zero duplicate group invites per visitor'] }
+              ]
+            },
+            {
+              title: 'High-Value B2B Tiers',
+              nodes: [
+                { title: 'C-Suite: Ultra-Low, High Signal', lines: ['Max 1 brief/week; zero promotional spam', 'VIP entry + optional conflict-free tasting'] },
+                { title: 'Buyers & Brands: Tailored Utility', lines: ['Buyers: matchmaking, SKUs, optional tasting', 'Brands: R&D/export trends & Bluebook pickup'] }
+              ]
+            },
+            {
+              title: 'Voucher & Consumer Tiers',
+              nodes: [
+                { title: 'Paid Voucher: Value Certainty', lines: ['Share DTC hero items & live cart rankings', 'Reinforce gate scan → auto-unlocked voucher'] },
+                { title: 'Free Consumer (If Kept): Bot Only', lines: ['Zero manual headcount; scheduled bot drops', 'T-14 auto-nudge to upgrade to Paid Voucher'] }
+              ]
+            },
+            {
+              title: '4-Zone Account Isolation',
+              nodes: [
+                { title: 'Red Core Accounts Untouched', lines: ['Sales leads never run blasts or plugins'] },
+                { title: 'Amber Hardware + Blue Official', lines: ['Separate devices/SIMs, 30% backup, 48h freeze', 'SMS + Service Account AI offload 70% notices'], kind: 'notice' }
+              ],
+              branch: true
+            }
+          ],
+          note: 'Distinct communities drive +10–15 pts attendance lift; conflict-free tasting options protect booth revenue; 4-zone physical isolation guarantees zero spillover to core accounts.'
+        },
+        {
+          name: 'Sprint & Close',
+          who: 'All Teams / Automated Ticketing & AI Support · 2027-04-11 to 04-30',
+          color: '--orange',
+          steps: [
+            {
+              title: 'Apr 11–20 Final Sprint',
+              nodes: [
+                { title: '75%+ Ad Budget Into Winners', lines: ['Freeze new creatives; maximize proven scale', 'Apr 12 cutoff for manual paid-pass refunds'] },
+                { title: 'Private Urgency & Fallback', lines: ['Push "Expiring Next Week" & 2–3x Moments/day', 'Trigger public official-account plan if needed'] }
+              ]
+            },
+            {
+              title: '4-Wave Attendance Drive',
+              nodes: [
+                { title: 'Apr 15 / 18 / 20 / 21 Cadence', lines: ['Segmented SMS for Trade vs. Paid Voucher', 'Tier-specific @All reminders + Service alerts'] },
+                { title: 'Multi-Layered On-Site Hooks', lines: ['Voucher unlock · Buyer matchmaking', 'Print Bluebook · Optional conflict-free tasting'] }
+              ]
+            },
+            {
+              title: 'Apr 21–23 Show Days',
+              nodes: [
+                { title: 'Run Ads Through First 1.5 Days', lines: ['Capture local same-day walk-in conversions', 'Post Day-1 buzz in groups to drive Day 2–3'] },
+                { title: 'Strict On-Site Controls', lines: ['No manual refunds or invoicing during show', 'Monitor live gate scans & voucher pool pace'], kind: 'notice' }
+              ]
+            },
+            {
+              title: 'Apr 24–30 Auto-Settlement',
+              nodes: [
+                { title: 'Reconcile Verified Gate Scans', lines: ['Complete full attendance audit on Apr 24'] },
+                { title: 'Attended → Vouchers + Invoices', lines: ['Auto-send DTC codes via SMS + AI Support', 'Issue unified post-show invoices (zero rework)'] },
+                { title: 'No-Show → Auto Full Refund', lines: ['Batch original-method refunds Apr 25–27', 'AI Support handles self-service status checks'], kind: 'notice' }
+              ],
+              branchAfterFirst: true
+            }
+          ],
+          note: 'The final 10 days generate 80% of paid conversions and decide the 40,000+ attendance goal; post-show automation settles vouchers, invoices, and refunds with minimal ticket friction.'
+        }
+      ];
+
+      function el(name, attrs = {}, parent = svg) {
+        const n = document.createElementNS(ns, name);
+        Object.entries(attrs).forEach(([k, v]) => n.setAttribute(k, String(v)));
+        parent.appendChild(n);
+        return n;
+      }
+
+      function escText(parent, text, x, y, cls = '', anchor = 'start') {
+        const n = el('text', { x, y, class: cls, 'text-anchor': anchor }, parent);
+        n.textContent = text;
+        return n;
+      }
+
+      let font, line, family, compact;
+
+      // Word-aware wrapping for clean English typography
+      function wrap(text, width, weight = '400') {
+        measure.font = `${weight} ${font}px ${family}`;
+        const words = text.split(/\s+/);
+        const out = [];
+        let current = '';
+        for (const word of words) {
+          const candidate = current ? `${current} ${word}` : word;
+          if (measure.measureText(candidate).width <= width) {
+            current = candidate;
+          } else {
+            if (current) out.push(current);
+            if (measure.measureText(word).width <= width) {
+              current = word;
+            } else {
+              let chunk = '';
+              for (const ch of word) {
+                if (chunk && measure.measureText(chunk + ch).width > width) {
+                  out.push(chunk);
+                  chunk = ch;
+                } else {
+                  chunk += ch;
+                }
+              }
+              current = chunk;
+            }
+          }
+        }
+        if (current) out.push(current);
+        return out;
+      }
+
+      function nodeSize(node, w) {
+        const titles = wrap(node.title, w - 22, '600');
+        const lines = node.lines.flatMap(t => wrap(t, w - 22, '400'));
+        return { titles, lines, h: 22 + line * (titles.length + lines.length) + (lines.length ? 5 : 0) };
+      }
+
+      function box(node, x, y, w, color) {
+        const m = nodeSize(node, w);
+        const g = el('g');
+        const tone = node.kind === 'notice' ? '--yellow' : color;
+        el('rect', {
+          x, y, width: w, height: m.h, rx: 6, class: 'node',
+          fill: `color-mix(in srgb,var(${tone}) 9%,var(--background))`
+        }, g);
+        let baseline = y + 11 + font;
+        m.titles.forEach(t => { escText(g, t, x + w / 2, baseline, 'strong', 'middle'); baseline += line; });
+        if (m.lines.length) baseline += 5;
+        m.lines.forEach(t => { escText(g, t, x + w / 2, baseline, 'quiet', 'middle'); baseline += line; });
+        return m.h;
+      }
+
+      function arrow(d) {
+        return el('path', { d, class: 'connector', 'marker-end': 'url(#process-arrow)' });
+      }
+
+      function header(x, y, w, h, title, color, idx) {
+        const notch = compact ? 0 : 12;
+        const d = `M${x} ${y}H${x + w - notch}L${x + w} ${y + h / 2}L${x + w - notch} ${y + h}H${x}L${x + notch} ${y + h / 2}Z`;
+        el('path', {
+          d,
+          fill: `color-mix(in srgb,var(${color}) ${14 + idx * 6}%,var(--background))`,
+          stroke: `color-mix(in srgb,var(${color}) 55%,var(--border))`,
+          'stroke-width': 1.2
+        });
+        const lines = wrap(title, w - 36, '600');
+        const first = y + h / 2 - (lines.length - 1) * line / 2 + font * 0.35;
+        lines.forEach((t, i) => escText(svg, t, x + w / 2, first + i * line, 'strong', 'middle'));
+      }
+
+      function paint() {
+        const w = Math.max(280, Math.floor(root.clientWidth - 36));
+        const style = getComputedStyle(root);
+        font = Math.min(13.5, parseFloat(style.fontSize) || 13.5);
+        line = font * 1.46;
+        family = style.fontFamily;
+        compact = w < 760;
+        svg.replaceChildren();
+
+        const titleEl = el('title');
+        titleEl.textContent = 'FBIF 2027 Visitor Acquisition & Paid Media Five-Phase Workflow';
+
+        const defs = el('defs');
+        const marker = el('marker', {
+          id: 'process-arrow', orient: 'auto', markerUnits: 'userSpaceOnUse',
+          refX: 7, refY: 4, markerWidth: 9, markerHeight: 8
+        }, defs);
+        el('path', { d: 'M1 1L7 4L1 7', fill: 'none', stroke: 'context-stroke', 'stroke-width': 1.3 }, marker);
+
+        let y = 4;
+        phases.forEach((phase, phaseIndex) => {
+          const labelH = line + 12;
+          el('rect', { x: 0, y: y + 3, width: 5, height: font + 5, rx: 2, fill: `var(${phase.color})` });
+          escText(svg, phase.name, 14, y + font + 4, 'strong');
+
+          measure.font = `600 ${font}px ${family}`;
+          const nameW = measure.measureText(phase.name).width;
+          const captionX = Math.max(122, Math.ceil(14 + nameW + 18));
+          const captionLines = wrap(phase.who, Math.max(120, w - captionX - 6), '400');
+          captionLines.forEach((t, i) => escText(svg, t, captionX, y + font + 4 + i * line, 'quiet'));
+          y += Math.max(labelH, captionLines.length * line + 12);
+
+          const cols = compact ? 1 : phase.steps.length;
+          const gap = compact ? 0 : 12;
+          const colW = (w - gap * (cols - 1)) / cols;
+          let maxBottom = y;
+
+          phase.steps.forEach((step, i) => {
+            const x = compact ? 0 : i * (colW + gap);
+            const sy = compact ? maxBottom : y;
+            const titleLines = wrap(step.title, colW - 36, '600');
+            const hh = Math.max(42, titleLines.length * line + 16);
+            header(x, sy, colW, hh, step.title, phase.color, i);
+
+            const nx = x + 16;
+            const nw = colW - 22;
+            let ny = sy + hh + 20;
+            let prevBottom = sy + hh;
+            const branchX = x + 6;
+            let branchY = sy + hh + 5;
+
+            step.nodes.forEach((node, ni) => {
+              if (step.branch || (step.branchAfterFirst && ni > 0)) {
+                const nm = nodeSize(node, nw);
+                if (step.branchAfterFirst && ni === 1) {
+                  el('path', { d: `M${nx + nw / 2} ${prevBottom + 4}V${prevBottom + 10}H${branchX}V${ny + nm.h / 2}`, class: 'connector' });
+                } else {
+                  el('path', { d: `M${branchX} ${branchY}V${ny + nm.h / 2}`, class: 'connector' });
+                }
+                arrow(`M${branchX} ${ny + nm.h / 2}H${nx - 4}`);
+                branchY = ny + nm.h / 2;
+              } else {
+                arrow(`M${nx + nw / 2} ${prevBottom + 4}V${ny - 5}`);
+              }
+              const height = box(node, nx, ny, nw, phase.color);
+              prevBottom = ny + height;
+              ny = prevBottom + 18;
+            });
+            maxBottom = Math.max(maxBottom, prevBottom + 16);
+            if (compact) maxBottom += 12;
+          });
+
+          y = maxBottom;
+          const noteLines = wrap(phase.note, w - 24, '400');
+          const noteH = noteLines.length * line + 18;
+          el('rect', {
+            x: 0, y, width: w, height: noteH, rx: 6,
+            fill: `color-mix(in srgb,var(${phase.color}) 7%,var(--background))`
+          });
+          noteLines.forEach((t, i) => escText(svg, t, 12, y + 9 + font + i * line));
+          y += noteH + 28;
+          if (phaseIndex < phases.length - 1) {
+            el('line', { x1: 0, y1: y - 14, x2: w, y2: y - 14, stroke: 'var(--border-soft)', 'stroke-width': 1 });
+          }
+        });
+
+        svg.setAttribute('viewBox', `0 0 ${w} ${y - 10}`);
+      }
+
+      paint();
+      let timer;
+      window.addEventListener('resize', () => {
+        clearTimeout(timer);
+        timer = setTimeout(paint, 120);
+      });
+    })();
+  </script>
+</body>
+</html>
