@@ -401,11 +401,16 @@
       color: var(--muted-foreground);
     }
 
-    .optional-cell strong {
+    .optional-cell > strong:first-child {
       display: block;
       color: var(--foreground);
       margin-bottom: 4px;
       font-size: 0.88rem;
+    }
+
+    .optional-cell strong {
+      color: var(--foreground);
+      font-weight: 600;
     }
 
     /* 难点与突破对照行 */
