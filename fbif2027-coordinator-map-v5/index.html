@@ -1,0 +1,937 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FBIF 2027 招观统筹全景图</title>
+<link rel="stylesheet" href="fonts/inter/opsz.css">
+<link rel="stylesheet" href="fonts/noto/wght.css">
+<style>
+:root{
+  --font:"Inter Variable","Noto Sans SC Variable","PingFang SC","Microsoft YaHei",sans-serif;
+  --accent:#2383E2;
+  --bg:#FAFAFA; --card:#FFFFFF; --fg:#171717; --muted:#6B6B6B;
+  --border:rgba(0,0,0,.08); --hover:rgba(0,0,0,.045); --track:rgba(0,0,0,.05);
+  --line:rgba(0,0,0,.22);
+  --sh:0 0 0 1px rgba(0,0,0,.06),0 1px 2px rgba(0,0,0,.04),0 2px 6px rgba(0,0,0,.03);
+  --soft:color-mix(in srgb,var(--accent) 13%,var(--card));
+  --soft2:color-mix(in srgb,var(--accent) 7%,var(--card));
+  color-scheme:light dark;
+}
+@media (prefers-color-scheme:dark){
+  :root{--bg:#171717;--card:#222222;--fg:#EDEDED;--muted:#A3A3A3;--border:rgba(255,255,255,.1);--hover:rgba(255,255,255,.06);--track:rgba(255,255,255,.06);--line:rgba(255,255,255,.28);--sh:0 0 0 1px rgba(255,255,255,.08);--soft:color-mix(in srgb,var(--accent) 26%,var(--card));--soft2:color-mix(in srgb,var(--accent) 14%,var(--card))}
+}
+*{box-sizing:border-box}
+html{scrollbar-gutter:stable;background:var(--bg)}
+body{margin:0;color:var(--fg);font:400 13px/20px var(--font);font-variation-settings:"opsz" 14;font-synthesis:none;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+h1,h2,h3,p,ul,ol,dl,dd{margin:0;padding:0}
+ul{list-style:none}
+.wrap{max-width:1240px;margin:0 auto;padding:0 32px}
+.semi{font-weight:550;font-variation-settings:"opsz" 18}
+.cap{font-size:12px;line-height:16px;color:var(--muted)}
+.muted{color:var(--muted)}
+.num{font-variant-numeric:tabular-nums}
+
+/* 顶栏：冻结 */
+header.top{position:sticky;top:0;z-index:50;background:var(--bg);transition:box-shadow .2s}
+header.top.scrolled{box-shadow:0 1px 0 var(--border)}
+header.top .wrap{padding-top:24px;padding-bottom:12px}
+h1{font-size:28px;line-height:34px;font-weight:700;font-variation-settings:"opsz" 25;text-wrap:balance}
+header .cap{margin-top:6px}
+.tabs{position:relative;display:inline-flex;gap:2px;margin-top:16px;padding:3px;border-radius:12px;background:var(--track);max-width:100%;overflow-x:auto;overflow-y:hidden;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tabs button{position:relative;z-index:2;appearance:none;border:0;background:none;color:var(--muted);font:inherit;padding:6px 14px;border-radius:9px;cursor:pointer;white-space:nowrap;display:inline-grid}
+.tabs button>span,.tabs button::after{grid-area:1/1}
+.tabs button::after{content:attr(data-t);font-weight:550;font-variation-settings:"opsz" 18;visibility:hidden;height:0;overflow:hidden}
+.tabs button[aria-selected=true]{color:var(--fg);font-weight:550;font-variation-settings:"opsz" 18}
+.tabs button:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+.tabs .hl,.tabs .sel{position:absolute;z-index:1;top:3px;bottom:3px;left:0;border-radius:9px;pointer-events:none;transition:transform .32s cubic-bezier(.2,.9,.25,1),width .32s cubic-bezier(.2,.9,.25,1),opacity .15s}
+.tabs .hl{background:var(--hover);opacity:0}
+.tabs .sel{background:var(--card);box-shadow:var(--sh)}
+
+main{padding-top:24px;padding-bottom:64px}
+.page[hidden]{display:none}
+.block+.block{margin-top:32px}
+h2{font-size:16px;line-height:22px;font-weight:550;font-variation-settings:"opsz" 18;text-wrap:balance}
+.block>.cap{margin-top:4px}
+.block>.body{margin-top:16px}
+.card{background:var(--card);border-radius:12px;box-shadow:var(--sh);padding:16px}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.grid4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+.dot-list li{position:relative;padding-left:12px;text-wrap:pretty}
+.dot-list li+li{margin-top:6px}
+.dot-list li::before{content:"";position:absolute;left:0;top:8px;width:4px;height:4px;border-radius:50%;background:var(--muted)}
+.card-title{font-weight:550;font-variation-settings:"opsz" 18}
+.card-title+.cap{margin-top:4px}
+.card .dot-list{margin-top:12px}
+
+/* 思维导图 */
+.mind{position:relative;display:grid;grid-template-columns:minmax(0,1fr) 220px minmax(0,1fr);gap:16px 64px;align-items:center}
+.mind svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;overflow:visible}
+.mind svg path{fill:none;stroke:var(--line);stroke-width:1.2}
+.mind .col{display:flex;flex-direction:column;gap:16px;position:relative;z-index:1}
+.root{position:relative;z-index:1;background:var(--accent);color:#fff;border-radius:12px;padding:20px 18px}
+.root .t{font-size:16px;line-height:22px;font-weight:550;font-variation-settings:"opsz" 18}
+.root p{margin-top:6px}
+.root ul{margin-top:12px}
+.root li+li{margin-top:4px}
+.week .card-title{margin-bottom:4px}
+
+/* 泳道流程 */
+.scroll-x{overflow-x:auto;overflow-y:hidden;padding:2px 2px 8px}
+.lane-grid{display:grid;grid-template-columns:136px repeat(6,minmax(148px,1fr));gap:8px;min-width:1060px}
+.stage{position:relative;height:40px;display:flex;align-items:center;justify-content:center;font-weight:550;font-variation-settings:"opsz" 18;background:var(--soft);clip-path:polygon(0 0,calc(100% - 12px) 0,100% 50%,calc(100% - 12px) 100%,0 100%,12px 50%)}
+.stage.first{clip-path:polygon(0 0,calc(100% - 12px) 0,100% 50%,calc(100% - 12px) 100%,0 100%);border-radius:8px 0 0 8px}
+.lane-label{position:sticky;left:0;z-index:2;background:var(--bg);padding:10px 8px 10px 0}
+.lane-label .cap{margin-top:4px}
+.cell{background:var(--card);border-radius:8px;box-shadow:var(--sh);padding:10px 12px;text-wrap:pretty}
+.cell.empty{background:transparent;box-shadow:none;color:var(--muted)}
+.chain{display:flex;align-items:stretch;gap:0;flex-wrap:nowrap;min-width:980px}
+.chain .node{flex:1 1 0;background:var(--card);border-radius:8px;box-shadow:var(--sh);padding:10px 12px}
+.chain .arrow{flex:0 0 28px;display:flex;align-items:center;justify-content:center;color:var(--muted)}
+.chain .fork{flex:1.6 1 0;display:flex;flex-direction:column;gap:8px}
+.chain .fork .node{flex:1 1 auto}
+.chain .node .cap{margin-bottom:4px}
+
+.flowmap{display:flex;align-items:center;min-width:1080px}
+.flowmap .node{background:var(--card);border-radius:8px;box-shadow:var(--sh);padding:10px 12px}
+.flowmap .arrow{flex:0 0 28px;text-align:center;color:var(--muted)}
+.fm-col{display:flex;flex-direction:column;gap:8px;flex:1 1 0}
+.fm-h{margin-bottom:-2px}
+.fm-key{flex:1 1 0;background:var(--soft)!important;box-shadow:none!important}
+.fm-split{flex:1.2 1 0}
+.mtx{display:grid;grid-template-columns:150px repeat(2,minmax(0,1fr));gap:8px}
+.mtx4{grid-template-columns:150px repeat(3,minmax(0,1fr))}
+.mtx-h{padding:0 12px}
+.mtx-l{padding:10px 8px 10px 0}
+.mtx-l .cap{margin-top:4px}
+/* 客户与内容 */
+.logic{display:flex;align-items:center;gap:0;flex-wrap:wrap}
+.logic .node{background:var(--card);border-radius:8px;box-shadow:var(--sh);padding:10px 14px}
+.logic .arrow{padding:0 10px;color:var(--muted)}
+.aud dl{margin-top:12px;display:grid;grid-template-columns:64px minmax(0,1fr);gap:8px 12px}
+.aud dt{font-size:12px;line-height:20px;color:var(--muted)}
+.aud dd{text-wrap:pretty}
+.formula{display:flex;align-items:stretch;gap:0}
+.formula .node{flex:1 1 0;background:var(--card);border-radius:12px;box-shadow:var(--sh);padding:16px}
+.formula .op{flex:0 0 32px;display:flex;align-items:center;justify-content:center;font-size:16px;color:var(--muted)}
+.formula .lead{flex:0 0 auto;background:var(--soft);box-shadow:none;display:flex;align-items:center}
+.formula .node p{margin-top:6px;text-wrap:pretty}
+.phase-strip{display:flex;gap:4px}
+.phase-strip>div{background:var(--card);box-shadow:var(--sh);padding:12px;min-width:0}
+.phase-strip>div:first-child{border-radius:12px 4px 4px 12px}
+.phase-strip>div:last-child{border-radius:4px 12px 12px 4px}
+.phase-strip>div:not(:first-child):not(:last-child){border-radius:4px}
+.phase-strip .bar{height:4px;border-radius:2px;background:var(--accent);margin-bottom:10px}
+.phase-strip p{margin-top:4px;text-wrap:pretty}
+.steps{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:16px;position:relative}
+.steps .card{position:relative}
+.steps .when{font-variant-numeric:tabular-nums}
+.rule{margin-top:16px;background:var(--soft2);border-radius:12px;padding:12px 16px}
+.rule .dot-list{margin-top:8px}
+
+/* 甘特图 */
+.gantt{position:relative;min-width:1080px}
+.g-row{display:grid;grid-template-columns:120px minmax(0,1fr)}
+.g-label{position:sticky;left:0;z-index:3;background:var(--bg);padding:6px 12px 6px 0;display:flex;align-items:flex-start}
+.g-track{position:relative;border-top:1px solid var(--border)}
+.g-head .g-track{border-top:0;height:36px}
+.g-month{position:absolute;top:0;height:36px;padding:8px 0 0 8px;font-weight:550;font-variation-settings:"opsz" 18}
+.g-vline{position:absolute;top:0;bottom:0;width:1px;background:var(--border)}
+.g-band{position:absolute;top:0;bottom:0;background:var(--soft2)}
+.g-key{position:absolute;top:0;bottom:0;width:0;border-left:1px dashed var(--line)}
+.g-bar{position:absolute;height:24px;border-radius:6px;background:var(--soft);white-space:nowrap;padding:2px 8px;font-size:12px;line-height:20px;overflow:visible;cursor:default}
+.g-bar span{position:relative}
+.g-ms{position:absolute;height:24px;display:flex;align-items:center;gap:6px;white-space:nowrap;font-size:12px;line-height:16px}
+.g-ms i{display:block;width:9px;height:9px;background:var(--accent);transform:rotate(45deg);border-radius:1px;flex:none}
+.g-ms .d{color:var(--muted);font-variant-numeric:tabular-nums}
+.month-cards .card .theme{margin-top:4px}
+.month-cards .got{margin-top:12px;padding-top:12px;border-top:1px solid var(--border)}
+.month-cards .got .cap{margin-bottom:4px}
+
+/* 难点、创新点 */
+.qa .sec{margin-top:12px}
+.qa .sec .cap{margin-bottom:4px}
+.qa .sec .dot-list{margin-top:0}
+.qa p{text-wrap:pretty}
+.foot{margin-top:40px}
+
+@media (max-width:1100px){
+  .grid4{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .grid3{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .steps{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media (max-width:960px){
+  .mind{grid-template-columns:1fr;gap:16px}
+  .mind svg{display:none}
+  .mind .root{order:-1}
+  .formula{flex-direction:column}
+  .formula .op{flex-basis:24px}
+}
+@media (max-width:720px){
+  .wrap{padding:0 16px}
+  .grid2,.grid3,.grid4,.steps{grid-template-columns:1fr}
+  .phase-strip{flex-direction:column}
+  .phase-strip>div{border-radius:12px!important;flex:auto!important}
+  h1{font-size:24px;line-height:30px}
+}
+</style>
+</head>
+<body>
+<header class="top" id="top">
+  <div class="wrap">
+    <h1>FBIF 2027 招观统筹全景图</h1>
+    <p class="cap">2027-04-21 至 2027-04-23 开展　目标到场 4 万人以上　排期从 2026-12 开始</p>
+    <nav class="tabs" role="tablist" aria-label="页面">
+      <span class="hl" aria-hidden="true"></span><span class="sel" aria-hidden="true"></span>
+      <button role="tab" data-p="duty" data-t="统筹职责"><span>统筹职责</span></button>
+      <button role="tab" data-p="flow" data-t="招观流程"><span>招观流程</span></button>
+      <button role="tab" data-p="content" data-t="客户与内容"><span>客户与内容</span></button>
+      <button role="tab" data-p="app" data-t="注册小程序"><span>注册小程序</span></button>
+      <button role="tab" data-p="plan" data-t="月度排期"><span>月度排期</span></button>
+      <button role="tab" data-p="hard" data-t="难点与解法"><span>难点与解法</span></button>
+      <button role="tab" data-p="idea" data-t="创新点"><span>创新点</span></button>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+
+<!-- 统筹职责 -->
+<section class="page" id="p-duty" role="tabpanel">
+  <div class="block">
+    <h2>统筹要管的 8 件事</h2>
+    <p class="cap">中间是你，两边是要管的事和要找谁配合</p>
+    <div class="body">
+      <div class="mind" id="mind">
+        <svg aria-hidden="true"></svg>
+        <div class="col" data-side="l">
+          <div class="card branch"><div class="card-title">目标与预算</div><p class="cap">配合：老板、财务</p>
+            <ul class="dot-list"><li>把 4 万到场拆到每个渠道、每一周</li><li>总预算 200 万，投放、小红书、短信都在里面，没有额外备用金</li><li>大致分法：短信 15–20 万，小红书测试不超过 10 万，其余给微信</li><li>投放预算按阶段放：起跑 10%、加速 15%、冲刺和决战 75% 以上</li><li>每周看三个数：各渠道报名、预计到场、到场成本</li></ul></div>
+          <div class="card branch"><div class="card-title">投放供应商</div><p class="cap">配合：供应商、技术、法务</p>
+            <ul class="dot-list"><li>12 月比稿定 3 家，微信为主，小红书小额测试待定</li><li>合同写死：用我方小程序并回传；报价按注册还是按到场；老客激活和裂变报名不收费；数据实时回到总表</li><li>3-15 淘汰 1 家，剩下 2 家跑到展期</li><li>单个账户成本理想就锁预算，靠开新账户扩量</li></ul></div>
+          <div class="card branch"><div class="card-title">内容与素材</div><p class="cap">配合：设计、内容</p>
+            <ul class="dot-list"><li>按人群定内容方向和钩子，见「客户与内容」</li><li>1 月底前备齐首批素材</li><li>每周看哪些素材在跑、哪些在衰减，提前 3 天备好替补</li><li>4-11 起停做新素材，预算只给已验证的爆款</li></ul></div>
+          <div class="card branch"><div class="card-title">点对点、私域与催到场</div><p class="cap">配合：销售助理、渠道组、社群组</p>
+            <ul class="dot-list"><li>12 月盘点全公司绿微账号，分组定人</li><li>按人群写四套话术，配海报和注册链接</li><li>每次发之前和总表比对：没注册的发邀观，注册了的发催到场</li><li>四轮邀观，每轮统计每个账号的发送、注册、到场</li><li>微信群分两类：其他社群可以群发邀观；观展票群只放注册了的人，用来催到场</li></ul></div>
+        </div>
+        <div class="root">
+          <div class="t">招观统筹</div>
+          <p>对到场 4 万人负总责</p>
+          <ul><li>定目标</li><li>分资源</li><li>盯节奏</li><li>管风险</li></ul>
+        </div>
+        <div class="col" data-side="r">
+          <div class="card branch"><div class="card-title">短信</div><p class="cap">配合：技术、短信平台</p>
+            <ul class="dot-list"><li>1 月底前收齐并清洗全公司手机号</li><li>催领票只发未报名的人，催到场只发已报名的人</li><li>8–10 轮，预算 15–20 万</li><li>每轮发完 24 小时内看点击、报名和到场成本</li></ul></div>
+          <div class="card branch"><div class="card-title">付费票与品牌券</div><p class="cap">配合：BD、技术、财务</p>
+            <ul class="dot-list"><li>单一价格；定每张票配几张券、券池有哪些品牌</li><li>给 BD 一份品牌权益清单，见「招观流程」页</li><li>BD 找展商、赛事、演讲嘉宾出券，优先品牌自营平台，先拿书面承诺</li><li>券按预计到场人数备，用到 80% 预警，用完换兜底券包</li><li>到场发券，未到场自动退款，到场确认后再开发票</li></ul></div>
+          <div class="card branch"><div class="card-title">大客户邀请（新增）</div><p class="cap">配合：销售、BD、展商</p>
+            <ul class="dot-list"><li>给展商发邀约工具，展商可以自己做宣传页和产品页</li><li>大客户组团邀请函和精华盘点</li><li>团队观展、采购商约见、高层专属接待</li><li>定高层和重点企业的到场目标</li></ul></div>
+          <div class="card branch"><div class="card-title">数据、系统与风险</div><p class="cap">配合：技术、法务</p>
+            <ul class="dot-list"><li>一张总表，手机号为主键：领票、注册、到场、发券、退款</li><li>注册小程序：来源参数、问卷、热度显示</li><li>账号防连坐：不用外挂群发，群发号和销售号分开</li><li>问卷和实名方式过法务；排期避开清明 2027-04-05</li></ul></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="block week">
+    <h2>建议的每周节奏</h2>
+    <p class="cap">2 月开跑后每周固定做，4 月改成每天看</p>
+    <div class="body grid4">
+      <div class="card"><div class="card-title">周一 看数</div><p>上周各渠道报名、预计到场、到场成本；成本异常的账户调预算</p></div>
+      <div class="card"><div class="card-title">周三 看素材</div><p>哪些素材在衰减、哪些在起量；淘汰末位，补上新素材</p></div>
+      <div class="card"><div class="card-title">周五 排下周</div><p>排下周点对点和短信，和总表去重</p></div>
+      <div class="card"><div class="card-title">随时 盯风险</div><p>账号异常、券量预警、供应商数据断流，当天处理</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 招观流程 -->
+<section class="page" id="p-flow" role="tabpanel" hidden>
+  <div class="block">
+    <h2>所有渠道同一个逻辑：先邀观，再催到场</h2>
+    <p class="cap">所有渠道都进同一个注册小程序；每次发之前按手机号和总表比对，没注册的发邀观，注册了的发催到场</p>
+    <div class="body scroll-x">
+      <div class="flowmap">
+        <div class="fm-col">
+          <p class="cap fm-h">邀观的渠道</p>
+          <div class="node">公域投放</div><div class="node">点对点（绿微）</div><div class="node">私域：公众号、朋友圈、其他社群</div><div class="node">短信</div><div class="node">大客户邀请<span class="cap">　新增</span></div>
+        </div>
+        <div class="arrow">→</div>
+        <div class="node fm-key"><p class="cap">同一个入口</p><p class="semi">注册小程序</p><p>选免费票或付费票</p></div>
+        <div class="arrow">→</div>
+        <div class="node fm-key"><p class="cap">每次发之前</p><p class="semi">和总表比对手机号</p><p>分成两拨</p></div>
+        <div class="arrow">→</div>
+        <div class="fm-col fm-split">
+          <div class="node"><p class="cap">没注册</p><p class="semi">继续邀观</p><p>回到左边各渠道，发注册链接</p></div>
+          <div class="node"><p class="cap">注册了</p><p class="semi">催到场</p><p>各渠道发催到场；新增观展票群</p></div>
+        </div>
+        <div class="arrow">→</div>
+        <div class="node fm-key"><p class="cap">展期</p><p class="semi">刷身份证入场</p><p>闸机记录算到场</p></div>
+        <div class="arrow">→</div>
+        <div class="fm-col fm-split">
+          <div class="node"><p class="cap">付费票</p><p class="semi">权益兑现</p><p>会中会后兑换券和产品；没到场自动退款</p></div>
+          <div class="node"><p class="cap">免费票</p><p class="semi">结束</p><p>展后复盘</p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="block">
+    <h2>每个渠道：邀观发什么，催到场发什么</h2>
+    <p class="cap">同一个渠道发两种内容，只看对方注册没有</p>
+    <div class="body">
+      <div class="mtx">
+        <div class="mtx-h"></div><div class="mtx-h cap">发给没注册的：邀观</div><div class="mtx-h cap">发给注册了的：催到场</div>
+        <div class="mtx-l"><div class="card-title">公域投放</div><p class="cap">统筹、投放供应商</p></div>
+        <div class="cell">微信为主，小红书测试待定；图片素材，四类钩子；点进来就是注册小程序</div>
+        <div class="cell">投放不做催到场；把已注册的人做成人群包排除掉，钱不花在已注册的人身上</div>
+        <div class="mtx-l"><div class="card-title">点对点（绿微）</div><p class="cap">销售助理、渠道组、社群组</p></div>
+        <div class="cell">一对一和群发助手，按渠道采购、品牌方、代工、老板四套话术，发注册链接</div>
+        <div class="cell">一对一提醒到场；邀请进观展票群</div>
+        <div class="mtx-l"><div class="card-title">私域</div><p class="cap">公众号、朋友圈</p></div>
+        <div class="cell">公众号推文、朋友圈发注册海报；看进度决定要不要开公开赠票</div>
+        <div class="cell">服务号提醒（关注了的人）；朋友圈发到场攻略、日程</div>
+        <div class="mtx-l"><div class="card-title">短信</div><p class="cap">统筹、技术</p></div>
+        <div class="cell">催注册：只发总表里没注册的手机号</div>
+        <div class="cell">催到场：只发已注册的手机号；专业观众推对接名单和新品，付费观众推到场领券</div>
+        <div class="mtx-l"><div class="card-title">其他社群</div><p class="cap">社群组</p></div>
+        <div class="cell">公司已有的各类微信群，可以群发邀观海报和注册链接</div>
+        <div class="cell">群里注册了的人，引导进观展票群</div>
+        <div class="mtx-l"><div class="card-title">观展票群<span class="cap">　新增</span></div><p class="cap">社群组</p></div>
+        <div class="cell empty">不用于邀观，只放注册了的人</div>
+        <div class="cell">已注册的人按人群进群；展前推展商名录、新品、日程，展期推现场活动和到场提醒</div>
+        <div class="mtx-l"><div class="card-title">大客户邀请<span class="cap">　新增</span></div><p class="cap">销售、BD</p></div>
+        <div class="cell">所有付费客户：展商、赞助、赛事、参会、媒体等。按客户类型写定制邀请函，一对一精心发，不群发；展商另给邀约工具，邀请自己的客户</div>
+        <div class="cell">专人确认来几位、什么时候到；VIP 接待</div>
+      </div>
+    </div>
+    <div class="rule"><div class="card-title">分两拨的规矩</div><ul class="dot-list">
+      <li>每次发之前都和总表比对，不给注册了的人发邀观，也不给没注册的人发催到场</li>
+      <li>邀观内容里不放查票、催到场的东西，只放注册链接</li>
+      <li>绿微里手机号对不上的好友，单独一拨，见「难点与解法」</li></ul></div>
+  </div>
+
+  <div class="block">
+    <h2>付费票：用付费提高价值认同，从而提高到场</h2>
+    <p class="cap">新增票种；会中和会后的重点是把权益兑现，同时不让我们的工作量大幅增加</p>
+    <div class="body scroll-x">
+      <div class="chain">
+        <div class="node"><p class="cap">观众</p><p>注册小程序里选付费票，挑 5 张品牌券</p></div>
+        <div class="arrow">→</div>
+        <div class="node"><p class="cap">观众</p><p>付款，同一手机号限买 1 张</p></div>
+        <div class="arrow">→</div>
+        <div class="node"><p class="cap">观众</p><p>2027-04-12 前可以自己退票</p></div>
+        <div class="arrow">→</div>
+        <div class="node"><p class="cap">系统</p><p>展期刷身份证入场，按首次入场记录算到场</p></div>
+        <div class="arrow">→</div>
+        <div class="fork">
+          <div class="node"><p class="cap">到场了</p><p>入场后在「我的 → 兑换券」自动解锁；展后再推一次提醒，到场确认后开发票</p></div>
+          <div class="node"><p class="cap">没到场</p><p>展后自动原路退款，不用开票也不用红冲</p></div>
+        </div>
+      </div>
+    </div>
+    <div class="body">
+      <div class="mtx mtx4">
+        <div class="mtx-h cap">环节</div><div class="mtx-h cap">系统自动或观众自助</div><div class="mtx-h cap">品牌或展商负责</div><div class="mtx-h cap">我们只管</div>
+        <div class="mtx-l semi">券解锁</div><div class="cell">刷身份证入场后自动解锁</div><div class="cell empty">不涉及</div><div class="cell">闸机没记录的个别人，服务台补录</div>
+        <div class="mtx-l semi">线上券兑换</div><div class="cell">观众自己刮开券码，一键跳品牌小程序领券</div><div class="cell">在自营平台兑现，品牌自己发货</div><div class="cell">品牌兑现失败时出面协调，或者换兜底券</div>
+        <div class="mtx-l semi">现场产品兑换（如果有）</div><div class="cell">观众在小程序出示兑换码</div><div class="cell">展商在自己展位核对兑换码、发产品、点「已兑换」</div><div class="cell">只处理异常；需要技术做一个展商核销页</div>
+        <div class="mtx-l semi">没到场退款</div><div class="cell">展后自动原路退</div><div class="cell empty">不涉及</div><div class="cell">退款失败的个别单</div>
+        <div class="mtx-l semi">开发票</div><div class="cell">观众在订单里自己申请，系统开具发到邮箱</div><div class="cell empty">不涉及</div><div class="cell">不用管</div>
+        <div class="mtx-l semi">问题和客诉</div><div class="cell">AI 客服和常见问题先接</div><div class="cell">券的兑现问题按约定时限处理</div><div class="cell">转人工的单子，2 个工作日内回复</div>
+      </div>
+    </div>
+    <div class="rule"><div class="card-title">工作量不大增的三条</div><ul class="dot-list">
+      <li>规则一次写清在购买页：到场认定、券由品牌兑现、退款、申诉期</li>
+      <li>发券、退款、开票全部自动或自助，我们不手动发任何一张券</li>
+      <li>人工只处理异常：现场一个票券服务台，展后一个客服入口</li></ul></div>
+  </div>
+
+  <div class="block">
+    <h2>给 BD 的品牌权益清单</h2>
+    <p class="cap">品牌出券能得到什么；每一项展后都给实际数字，事先不承诺具体人次</p>
+    <div class="body grid2 qa">
+      <div class="card"><div class="card-title">曝光</div><ul class="dot-list">
+        <li><span class="semi">投放广告素材出镜</span>：品牌产品出现在品牌券主题的投放图里。展后给：素材曝光人次、点击次数，以投放平台后台数据为准</li>
+        <li><span class="semi">投放落地页品牌位</span>：落地页展示品牌和券。展后给：落地页浏览人次</li>
+        <li><span class="semi">选券页品牌卡</span>：每个买票的人都会翻到这一页挑 5 张券。展后给：选券页浏览人次、品牌卡被点开次数</li>
+        <li><span class="semi">发券提醒里出现品牌名</span>：展后短信和服务号提醒。展后给：发送人数</li></ul></div>
+      <div class="card"><div class="card-title">拉新和意向数据</div><ul class="dot-list">
+        <li><span class="semi">被观众主动选中</span>：买票时自己挑的券，代表真实兴趣。展后给：被选张数，以及选中者的业务类型、职位分布（匿名汇总）</li>
+        <li><span class="semi">到场持券人数</span>：只有到场才解锁，每一张都对应一个真来过展会的人。展后给：到场持券人数</li>
+        <li><span class="semi">直接进品牌自营小程序</span>：观众一键跳到品牌自己的小程序领券，领券和下单都在品牌后台，人留在品牌自己的会员体系里。展后给：跳转次数；领券和下单数由品牌自己看</li>
+        <li><span class="semi">展后数据报告</span>：以上数字汇总成一页，BD 拿去续约下一届</li></ul></div>
+      <div class="card"><div class="card-title">展商额外可加</div><ul class="dot-list">
+        <li>券卡上写展位号，引导持券人到展位</li>
+        <li>展商邀约工具里放自己的券，邀请客户时多一个理由</li></ul></div>
+      <div class="card"><div class="card-title">品牌要出什么、守什么</div><ul class="dot-list">
+        <li>自营平台的券码，写明面额、门槛、有效期；演示里写的是领取后 30 天</li>
+        <li>书面确认券的数量，12 月内给</li>
+        <li>指定一个兑现对接人，观众领不到券时按约定时限处理</li>
+        <li>观众个人信息不提供给品牌，只给匿名汇总；观众在品牌小程序领券时，由品牌自己按其规则取得授权</li></ul></div>
+    </div>
+    <div class="rule"><div class="card-title">要和 BD 对齐</div><ul class="dot-list">
+      <li>选券页的排序规则，比如券价值高、数量足的排前面；排序会直接影响品牌被选中的次数</li>
+      <li>每个品牌出多少张券才能进券池，有没有起步数量</li></ul></div>
+  </div>
+
+  <div class="block">
+    <h2>券码怎么拿到、收不到怎么办、客诉怎么接</h2>
+    <p class="cap">有两次核销：观众到场靠闸机，券在品牌自营平台兑换，要分开管</p>
+    <div class="body grid3 qa">
+      <div class="card"><div class="card-title">券码放在哪</div>
+        <div class="sec"><p class="cap">小程序演示已经这样做</p><ul class="dot-list">
+          <li>券码在「我的 → 兑换券」，刮开后复制，一键跳到品牌小程序领券</li>
+          <li>短信和服务号只负责提醒，附「我的」页链接，不在短信里放券码</li>
+          <li>收不到短信不影响拿券，用持票人手机号登录就能看到</li>
+          <li>一单给同事买多张时，券跟着持票人走，提醒发到持票人的手机号</li></ul></div>
+        <div class="sec"><p class="cap">什么时候解锁</p><ul class="dot-list">
+          <li>建议刷身份证入场后就解锁（演示就是这样），问题在现场暴露，有人能当场处理</li>
+          <li>展后照会上定的，再统一推送一次提醒</li>
+          <li>演示的规则写的是「展览结束后统一发放券码」，和实际做法不一致，二选一后改文案</li></ul></div>
+        <div class="sec"><p class="cap">短信</p><p>用通知类模板，不带营销字样，减少被手机拦截；能发几条、到达率多少，以短信平台实测为准</p></div>
+      </div>
+      <div class="card"><div class="card-title">现场收不到怎么办</div>
+        <div class="sec"><p class="cap">设「票券帮助」服务台，工作人员按手机号查后台</p><ul class="dot-list">
+          <li>有入场记录、页面没显示：当场重新解锁，再补发一条短信</li>
+          <li>报名时手机号填错：核对身份证和购票付款记录后，改成正确号码</li>
+          <li>走了 VIP 通道或团体入场，没有闸机记录：核对身份证和票后手动补录到场，补录要记操作人和原因</li>
+          <li>闸机数据有延迟：告诉观众预计多久能看到，留下手机号，到时自动补发</li>
+          <li>想要的券已经抢完：当场换成兜底券包</li></ul></div>
+        <div class="sec"><p class="cap">要提前准备</p><p>服务台用的查询后台、补录权限；印一张二维码，扫码直达小程序「我的」页</p></div>
+      </div>
+      <div class="card"><div class="card-title">展后客诉怎么接</div>
+        <div class="sec"><p class="cap">先把规则写在购买页</p><ul class="dot-list">
+          <li>到场以闸机首次实名入场为准</li>
+          <li>券由品牌方兑现，门槛和有效期以品牌页面为准</li>
+          <li>申诉期：展后 15 天内</li>
+          <li>购买条款请法务审</li></ul></div>
+        <div class="sec"><p class="cap">分三类处理</p><ul class="dot-list">
+          <li>来了却被退款或没拿到券：查闸机和服务台记录，属实就补录、补发券，已退款的不再追回</li>
+          <li>券在品牌平台用不了：由我们对接品牌，处理不了就换兜底券。和品牌签约时写清兑现时限和对接人</li>
+          <li>没来但说来了：以闸机和服务台记录为准，没有记录不补</li></ul></div>
+        <div class="sec"><p class="cap">接待</p><p>服务号 AI 客服先接，答不了的转人工，承诺 2 个工作日内回复；每一单都记进总表，复盘时看主要卡在哪</p></div>
+      </div>
+    </div>
+    <div class="rule"><div class="card-title">还要确认</div><ul class="dot-list">
+      <li>闸机数据能不能实时回传到总表，延迟多久</li>
+      <li>品牌自营平台能不能把兑换数据回传给我们；不能的话，只能统计「已解锁」和「已打开」</li>
+      <li>原路退款失败（比如付款账户已注销）的单子由谁处理</li></ul></div>
+  </div>
+
+  <div class="block">
+    <h2>所有渠道的数据都回到一张总表</h2>
+    <p class="cap">手机号是唯一的钥匙，每个人有五个状态</p>
+    <div class="body scroll-x">
+      <div class="chain">
+        <div class="node"><p class="cap">来源</p><p>所有渠道都进同一个注册小程序，记下来源</p></div>
+        <div class="arrow">→</div>
+        <div class="node"><p class="cap">注册</p><p>填完问卷和实名，知道他是谁、做什么</p></div>
+        <div class="arrow">→</div>
+        <div class="node"><p class="cap">到场</p><p>闸机数据回写</p></div>
+        <div class="arrow">→</div>
+        <div class="node"><p class="cap">发券或退款</p><p>付费票自动处理</p></div>
+        <div class="arrow">→</div>
+        <div class="node"><p class="cap">复盘</p><p>按渠道、按账号、按展商算到场和成本</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 客户与内容 -->
+<section class="page" id="p-content" role="tabpanel" hidden>
+  <div class="block">
+    <h2>先抓渠道，品牌跟着来，供应商自然到场</h2>
+    <p class="cap">2026 年定下的逻辑：前期主推专业观众，后期再推消费者，消费者好招</p>
+    <div class="body logic">
+      <div class="node semi">渠道采购</div><span class="arrow">→</span>
+      <div class="node semi">品牌方</div><span class="arrow">→</span>
+      <div class="node semi">代工厂和供应商</div><span class="arrow">→</span>
+      <div class="node">最后再推消费者</div>
+    </div>
+  </div>
+
+  <div class="block">
+    <h2>每类客户要什么、给他看什么</h2>
+    <p class="cap">投放内容是公域广告里说的话，点对点内容是绿微、邀请函里发的东西</p>
+    <div class="body grid2">
+      <div class="card aud"><div class="card-title">渠道采购</div><p class="cap">经销商、零售、电商采购　优先级最高</p>
+        <dl><dt>要什么</dt><dd>选品效率，一次看到大量新品</dd>
+        <dt>投放内容</dt><dd>产品研发趋势；一天看完全年新品；免费限量选品手册，带展商联系方式</dd>
+        <dt>点对点</dt><dd>按品类整理的新品清单；渠道联采会邀请；采购商约见，提前约好想见的品牌</dd>
+        <dt>话术</dt><dd>帮他省时间、帮他赚钱，例如「错过这个，就错过一年的新品」</dd>
+        <dt>票</dt><dd>免费专业票</dd></dl></div>
+      <div class="card aud"><div class="card-title">品牌方老板和高层</div><p class="cap">你最想要的人</p>
+        <dl><dt>要什么</dt><dd>增长焦虑：第二增长曲线在哪，对手在做什么</dd>
+        <dt>投放内容</dt><dd>战略性、警告性文案；第二增长曲线要靠技术突破；出海</dd>
+        <dt>点对点</dt><dd>定制邀请函（观展 + 参会）配精华盘点，抓焦虑、讲行业大趋势；同行已确认到场的阵容</dd>
+        <dt>话术</dt><dd>战略性、警告性，不推销</dd>
+        <dt>票</dt><dd>免费专业票加参会礼遇；组团或团队观展名额</dd></dl></div>
+      <div class="card aud"><div class="card-title">品牌方团队</div><p class="cap">研发、市场、渠道负责人</p>
+        <dl><dt>要什么</dt><dd>找渠道合作，看新原料新工艺，看包装和营销案例</dd>
+        <dt>投放内容</dt><dd>渠道资源，已确认到场的渠道；出海渠道；技术突破</dd>
+        <dt>点对点</dt><dd>团队观展：按岗位给看展路线（研发看原料工艺，市场看包装营销，渠道看新品），附展后复盘模板</dd>
+        <dt>话术</dt><dd>学习价值：带着问题来，带着结论回去</dd>
+        <dt>票</dt><dd>按团队给名额</dd></dl></div>
+      <div class="card aud"><div class="card-title">代工厂</div><p class="cap">OEM、定制生产</p>
+        <dl><dt>要什么</dt><dd>找品牌客户和渠道</dd>
+        <dt>投放内容</dt><dd>已确认到场的品牌和渠道；供应商的技术壁垒</dd>
+        <dt>点对点</dt><dd>已确认到场的品牌和渠道采购名单；渠道联采会</dd>
+        <dt>话术</dt><dd>讲生意机会</dd>
+        <dt>票</dt><dd>免费专业票</dd></dl></div>
+      <div class="card aud"><div class="card-title">供应商</div><p class="cap">原料、包装、设备</p>
+        <dl><dt>要什么</dt><dd>2026 年的结论：会自然到场，不单独花钱拉</dd>
+        <dt>反过来用</dt><dd>把供应商的技术壁垒做成内容，给品牌和代工看，帮品牌和代工找第二增长曲线</dd>
+        <dt>票</dt><dd>免费专业票</dd></dl></div>
+      <div class="card aud"><div class="card-title">消费者和付费券观众</div><p class="cap">后期再推</p>
+        <dl><dt>要什么</dt><dd>福利、现场产品</dd>
+        <dt>投放内容</dt><dd>产品和现场福利；付费票送品牌券：到场才发券，不来全额退</dd>
+        <dt>点对点</dt><dd>不重点做</dd>
+        <dt>话术</dt><dd>福利、限量</dd>
+        <dt>票</dt><dd>付费券票；免费消费者票留不留待 12-10 拍板，2026 年消费者到场率只有 21.7%</dd></dl></div>
+    </div>
+  </div>
+
+  <div class="block">
+    <h2>投放内容怎么做</h2>
+    <p class="cap">2027 年投放暂时只做图片素材，视频放在备选；公式沿用 2026 年总结，按图片改写</p>
+    <div class="body formula">
+      <div class="node lead semi">爆款 =</div>
+      <div class="op">　</div>
+      <div class="node"><div class="card-title">抓手</div><p>标题和首图一眼抓住注意力，打专业观众最在意的效率。例如「一秒节省你 XX 时间」「错过这个，就错过 XX 生意」</p></div>
+      <div class="op">+</div>
+      <div class="node"><div class="card-title">利他</div><p>回答「来了能得到什么」：选品机会、渠道和品牌对接、限量爆品手册。本质是帮他赚钱或省钱</p></div>
+      <div class="op">+</div>
+      <div class="node"><div class="card-title">一眼看懂</div><p>一张图只讲一件事，产品和人看得清，视觉冲击优先</p></div>
+    </div>
+    <div class="body grid3">
+      <div class="card"><div class="card-title">素材形式</div><p class="cap">2026 年实测</p>
+        <ul class="dot-list"><li>极简横图：效率最高</li><li>「产品 + 人」九宫格：最稳</li><li>品牌券图：新增，展示券和已加购人数</li><li>只靠一套素材会被平台限流，要多套轮换</li><li class="muted">备选：短视频，暂时不做；图片跑不动或有余力时再加</li></ul></div>
+      <div class="card"><div class="card-title">三种调性</div><p class="cap">同时准备</p>
+        <ul class="dot-list"><li>展会爆款复刻：直接复制往届跑过的爆款</li><li>高级质感：符合公司调性，好看</li><li>全网吸睛：找点击率最高的形式</li></ul></div>
+      <div class="card"><div class="card-title">四类钩子同时测</div><p class="cap">2-16 开跑时一起上，看哪类跑得动</p>
+        <ul class="dot-list"><li>战略和警告：给老板</li><li>研发趋势：给渠道采购</li><li>出海：给品牌方</li><li>品牌券：给消费者和付费观众</li></ul></div>
+    </div>
+    <div class="body phase-strip">
+      <div style="flex:28"><div class="bar"></div><div class="card-title">起跑 2-16 至 3-15</div><p>磨内容、测爆款、控成本；3 家供应商一起跑</p></div>
+      <div style="flex:26"><div class="bar"></div><div class="card-title">加速 3-16 至 4-10</div><p>复刻已验证的爆款，同时继续上新</p></div>
+      <div style="flex:13"><div class="bar"></div><div class="card-title">冲刺和决战 4-11 至 4-23</div><p>停做新素材，预算全给已验证的爆款</p></div>
+    </div>
+    <div class="body grid2">
+      <div class="card"><div class="card-title">落地页就是注册小程序</div>
+        <ul class="dot-list"><li>投放点进来直接到注册小程序，不另做落地页</li><li>优化建议见「注册小程序」页</li></ul></div>
+      <div class="card"><div class="card-title">投给谁</div>
+        <ul class="dot-list"><li>我们自己的客户人群包：手机号、粉丝、uid</li><li>地域：江浙沪大区，加公司地址定点；2025 年 55.2% 的到场观众来自长三角</li><li>远距离的免费票压低出价</li><li>微信广告引导加企业微信太贵，约 100 元一个，不做；小红书引导加微信更顺</li></ul></div>
+    </div>
+  </div>
+
+  <div class="block">
+    <h2>点对点发什么</h2>
+    <p class="cap">全部用绿微；四轮节奏沿用 2025 年验证过的做法，日期按 2027 年展期和清明调整</p>
+    <div class="body steps">
+      <div class="card"><p class="cap when">12 月至 2 月上旬</p><div class="card-title">准备</div>
+        <ul class="dot-list"><li>盘点账号：销售助理代发、渠道组、社群组、号主自发</li><li>按渠道采购、品牌方、代工、老板写四套话术</li><li>首批海报、带账号参数的注册链接</li></ul></div>
+      <div class="card"><p class="cap when">2-16 至 3-15</p><div class="card-title">第一轮 一对一</div>
+        <ul class="dot-list"><li>一对一触达高价值老客户</li><li>内容：开票通知、注册链接、一句针对他的话</li><li>重点客户发定制邀请函</li></ul></div>
+      <div class="card"><p class="cap when">3-16 至 4-02</p><div class="card-title">第二轮 测试和精选</div>
+        <ul class="dot-list"><li>每组 500 人，测「纯文字」和「海报 + 文字」；2025 年每波转化 0.72%–0.81%</li><li>精选品牌和代工，推渠道联采会</li><li>展商开始用邀约工具</li></ul></div>
+      <div class="card"><p class="cap when">4-06 至 4-13</p><div class="card-title">第三轮 全量</div>
+        <ul class="dot-list"><li>清明后全量推：活动手册、选品手册、品牌券</li><li>号主自己的账号发一轮</li></ul></div>
+      <div class="card"><p class="cap when">4-14 至 4-20</p><div class="card-title">第四轮 临门一脚</div>
+        <ul class="dot-list"><li>推「下周失效」</li><li>看进度决定要不要开公众号公开赠票</li><li>朋友圈从每周 2 条加到每天 1–3 条</li><li>展前 1 周和前 1 天提醒已领票的人到场</li></ul></div>
+    </div>
+    <div class="rule">
+      <div class="card-title">每轮都守的规矩</div>
+      <ul class="dot-list"><li>文字和海报分开发，错开时间</li><li>发之前和总表比对：没注册的发邀观，注册了的发催到场</li><li>群发助手每次最多 200 人，按标签选人</li></ul>
+    </div>
+  </div>
+
+  <div class="block">
+    <h2>短信发什么</h2>
+    <p class="cap">2026 年到场率最高的渠道：到场率 50.3%，一个到场 107 元</p>
+    <div class="body grid3">
+      <div class="card"><p class="cap when">3-25 至 4-16，每 4–5 天一轮，共 5–6 轮</p><div class="card-title">催领票</div>
+        <ul class="dot-list"><li>只发未报名、未购票的人</li><li>测三类文案：研发趋势和选品效率、限时失效、到场领品牌券</li><li>高点击的模板留到展前 10 天放量</li></ul></div>
+      <div class="card"><p class="cap when">4-15、4-18、4-20、4-21</p><div class="card-title">催到场</div>
+        <ul class="dot-list"><li>只发已报名的人</li><li>专业观众：对接名单、手册、新品</li><li>付费观众：到场才发券，附入场须知</li></ul></div>
+      <div class="card"><p class="cap when">4-24 起</p><div class="card-title">展后发券</div>
+        <ul class="dot-list"><li>给到场的付费观众发券码</li><li>短信和服务号 AI 客服两条路一起发，没送达的补发一次</li></ul></div>
+    </div>
+    <div class="rule"><div class="card-title">红线</div><ul class="dot-list"><li>每次发送前和总表去重，绝不给已报名的人发催领票</li></ul></div>
+  </div>
+</section>
+
+<!-- 注册小程序 -->
+<section class="page" id="p-app" role="tabpanel" hidden>
+  <div class="block">
+    <h2>注册小程序优化建议</h2>
+    <p class="cap">所有渠道都落到这一个小程序，它就是投放落地页；依据是对 ticket.fbif.com/demo 的完整走查</p>
+  </div>
+
+  <div class="block">
+    <h2>一、让更多人完成注册</h2>
+    <div class="body grid2 qa">
+      <div class="card"><div class="card-title">首屏先讲为什么要来</div><p class="sec">现在一打开就是「选择票种」。投放来的人很多不认识 FBIF，没看到价值就要选票，容易直接关掉。</p>
+        <div class="sec"><p class="cap">建议</p><ul class="dot-list"><li>票种上方加一屏：展期地点、展商和新品数量、两个主论坛</li><li>按来源换一句话：渠道看「一天看完全年新品」，老板看行业趋势，品牌看渠道资源</li></ul></div></div>
+      <div class="card"><div class="card-title">每个入口带来源参数</div><p class="sec">分两拨发消息、和供应商结算、算每个绿微账号和展商带来多少人，都要知道这个人从哪来的。</p>
+        <div class="sec"><p class="cap">建议</p><ul class="dot-list"><li>每家投放供应商、每条短信、每个绿微账号、每家展商、每封大客户邀请函，各一条带参数的链接</li><li>注册时把来源写进总表，用户看不到</li></ul></div></div>
+      <div class="card"><div class="card-title">显示热度</div><p class="sec">你在 2027 方案里提过：显示浏览量、曝光点击和已加购人数。演示里都还没有，只有两张券标了「已领完」。</p>
+        <div class="sec"><p class="cap">建议</p><ul class="dot-list"><li>票种卡显示「已有 XX 人领票」</li><li>每张券显示「XX 人已选」，快抢完的标「仅剩少量」</li><li>数字要真实，不要虚构</li></ul></div></div>
+      <div class="card"><div class="card-title">问卷加回关键题</div><p class="sec">现在职业信息只有一道「贵司业务类型」。2026 年砍问卷的教训是：来了很多泛人群，也不知道谁是老板。</p>
+        <div class="sec"><p class="cap">建议</p><ul class="dot-list"><li>加「职位层级」（老板或高管 / 总监 / 经理 / 执行），用来数高层到场和分群</li><li>加「关注品类」和「参观目的」，用来推内容、反哺招展</li><li>题目都做成点选，先小范围测流失率</li><li>问卷结果回传给投放平台</li></ul></div></div>
+    </div>
+  </div>
+
+  <div class="block">
+    <h2>二、让付费票卖得出去，价值说得清</h2>
+    <div class="body grid2 qa">
+      <div class="card"><div class="card-title">把「零风险」讲在最前面</div><p class="sec">付费的目的是提高价值认同，但观众第一反应是「为什么要花钱」。</p>
+        <div class="sec"><p class="cap">建议</p><ul class="dot-list"><li>票种卡上直接写：付 ¥19.9，到场送 5 张品牌券；不来全额退</li><li>券的总价值和票价并排放，让人一眼看出划算</li></ul></div></div>
+      <div class="card"><div class="card-title">「价值 ¥129」改成真实合计</div><p class="sec">能选的组合大多不到 ¥129，随便选 5 张是 ¥123，容易被投诉。</p>
+        <div class="sec"><p class="cap">建议</p><ul class="dot-list"><li>改成「最高价值 ¥129」</li><li>选券时底部实时显示「已选价值 ¥XX」，演示的卡包已经有这个数</li></ul></div></div>
+      <div class="card"><div class="card-title">券的名字统一成一个</div><p class="sec">现在有产品兑换券、新品兑换券、优惠券三种叫法。</p>
+        <div class="sec"><p class="cap">建议</p><p>统一叫「品牌券」或「新品兑换券」，购买页、卡包、短信全部一致</p></div></div>
+      <div class="card"><div class="card-title">发券时机和规则文案一致</div><p class="sec">规则写「展览结束后统一发放券码」，实际是入场就解锁。</p>
+        <div class="sec"><p class="cap">建议</p><p>按入场解锁来写：「刷身份证入场后，券码自动出现在『我的』」</p></div></div>
+    </div>
+  </div>
+
+  <div class="block">
+    <h2>三、注册后的页面，帮催到场</h2>
+    <div class="body grid2 qa">
+      <div class="card"><div class="card-title">注册成功页给下一步</div><p class="sec">现在成功页只有「查看我的门票」「继续购票」。这一页是关注服务号、进观展票群的最好时机，这两个都是催到场的渠道。</p>
+        <div class="sec"><p class="cap">建议</p><ul class="dot-list"><li>关注服务号，接收入场提醒</li><li>按问卷推荐对应的观展票群</li><li>添加到手机日历</li></ul></div></div>
+      <div class="card"><div class="card-title">「我的」页放入场须知</div><p class="sec">现在门票卡只有姓名和状态，点开没有反应，也没有入场码。</p>
+        <div class="sec"><p class="cap">建议</p><ul class="dot-list"><li>点开门票卡显示入场须知：时间、地址、交通、要带的证件</li><li>写清护照、港澳台证件和忘带身份证的人怎么入场</li><li>放展商名录、日程的入口</li></ul></div></div>
+      <div class="card"><div class="card-title">邀请同事走团队观展</div><p class="sec">演示已有「添加观展人，再买一张给同事或朋友」。</p>
+        <div class="sec"><p class="cap">建议</p><ul class="dot-list"><li>改成可以转发给同事、让同事自己填信息的链接，链接带邀请人来源</li><li>和大客户的团队观展名额用同一套</li></ul></div></div>
+      <div class="card"><div class="card-title">免费票的审核要有状态</div><p class="sec">标着「需审核」，提交后却直接领取成功。</p>
+        <div class="sec"><p class="cap">建议</p><ul class="dot-list"><li>提交后显示「审核中」，写明多久出结果</li><li>审核结果用服务号或短信通知</li><li>先定审核标准：哪些人不通过</li></ul></div></div>
+    </div>
+  </div>
+
+  <div class="block">
+    <h2>四、会中会后少出问题，少占人力</h2>
+    <div class="body grid2 qa">
+      <div class="card"><div class="card-title">客服入口和常见问题</div><p class="sec">现在只有一行「请联系现场服务台或客服」，不能点。</p>
+        <div class="sec"><p class="cap">建议</p><ul class="dot-list"><li>「我的」页加客服入口，先接 AI 客服</li><li>常见问题写好：券在哪、券用不了、没收到短信、怎么退款、怎么开票</li></ul></div></div>
+      <div class="card"><div class="card-title">协议要能打开，不默认勾选</div><p class="sec">《购票须知》《个人信息处理规则》点不开，而且默认已勾选。收身份证号，这块要过法务。</p>
+        <div class="sec"><p class="cap">建议</p><p>协议名做成可点开的链接，由观众自己勾选</p></div></div>
+      <div class="card"><div class="card-title">退款规则写全</div><p class="sec">演示里入场后点退款会提示「入场后不可退款」，但入场前能不能退、截止到哪天，页面没写。</p>
+        <div class="sec"><p class="cap">建议</p><ul class="dot-list"><li>购买页写清：2027-04-12 前可自己退；入场后不退；没到场展后自动退</li><li>加一句：券兑现失败由 FBIF 负责换券</li></ul></div></div>
+      <div class="card"><div class="card-title">现场产品兑换要有核销页</div><p class="sec">如果有展位现场领产品，靠我们的人去核对，工作量会很大。</p>
+        <div class="sec"><p class="cap">建议</p><p>给展商一个简单的核销页：看观众出示的兑换码，点「已兑换」，展商自己处理</p></div></div>
+    </div>
+  </div>
+
+  <div class="block">
+    <h2>五、演示里要修的问题</h2>
+    <div class="body grid2 qa">
+      <div class="card"><div class="card-title">流程和逻辑</div><ul class="dot-list">
+        <li>写着「两种票任选其一」，但两种可以同时选</li>
+        <li>标题写「选 5 张兑换券」，但选 1 张就能下一步</li>
+        <li>刮开一张券时，其余 4 张的券码也露出来了</li>
+        <li>刮开券码后按钮还是灰的，要先点「复制」才能去兑换</li>
+        <li>只选免费票时，最后一步还叫「支付」</li>
+        <li>刮刮卡上写的是 FBIF 2028</li>
+        <li>右上角「关闭」点了没反应</li>
+        <li>发票抬头没跟着持票人姓名变</li></ul></div>
+      <div class="card"><div class="card-title">窄屏显示（300px 宽）</div><ul class="dot-list">
+        <li>选券页底部的「已选 X/5」和按钮重叠</li>
+        <li>多个页面底部的「1 张票」「持票人 1/1」被挤成竖排</li>
+        <li>标题「FBIF 2027 购票」被截断</li>
+        <li>券名「¥20 无门槛优惠券」、订单号被截断；券码折成 3 行</li>
+        <li>支付成功页的彩带压住标题，蓝色圆圈里少了对勾</li></ul></div>
+    </div>
+  </div>
+</section>
+
+<!-- 月度排期 -->
+<section class="page" id="p-plan" role="tabpanel" hidden>
+  <div class="block">
+    <h2>2026-12 至 2027-05 排期</h2>
+    <p class="cap">菱形是要拍板或卡死的日子；浅色竖条是展期，虚线是春节和清明</p>
+    <div class="body scroll-x"><div class="gantt" id="gantt"></div></div>
+  </div>
+  <div class="block month-cards">
+    <h2>每个月统筹要做的事</h2>
+    <p class="cap">月底那一行是这个月必须拿到的东西</p>
+    <div class="body grid3" id="months"></div>
+  </div>
+</section>
+
+<!-- 难点与解法 -->
+<section class="page" id="p-hard" role="tabpanel" hidden>
+  <div class="block">
+    <h2>11 个难点，怎么解，还要验证什么</h2>
+    <p class="cap">写着「还要验证」的，结果出来前别写进审批稿</p>
+    <div class="body grid2 qa" id="hards"></div>
+  </div>
+</section>
+
+<!-- 创新点 -->
+<section class="page" id="p-idea" role="tabpanel" hidden>
+  <div class="block">
+    <h2>已经定了</h2>
+    <div class="body grid3 qa" data-ideas="0"></div>
+  </div>
+  <div class="block">
+    <h2>这次新记的</h2>
+    <div class="body grid2 qa" data-ideas="1"></div>
+  </div>
+  <div class="block">
+    <h2>值得一试</h2>
+    <div class="body grid3 qa" data-ideas="2"></div>
+  </div>
+</section>
+
+<p class="cap foot">2025、2026 年的数字来自往年观展票和投放表；供应商的说法和标注「还要验证」的内容都没有经过我们自己的数据验证。</p>
+</main>
+
+<script>
+(() => {
+  /* ---------- 标签页 ---------- */
+  const tabs = [...document.querySelectorAll('.tabs button')];
+  const nav = document.querySelector('.tabs');
+  const sel = nav.querySelector('.sel'), hl = nav.querySelector('.hl');
+  const place = (el, b) => { el.style.width = b.offsetWidth + 'px'; el.style.transform = `translateX(${b.offsetLeft}px)`; };
+  function show(id, push) {
+    if (!document.getElementById('p-' + id)) id = 'duty';
+    tabs.forEach(b => b.setAttribute('aria-selected', String(b.dataset.p === id)));
+    document.querySelectorAll('.page').forEach(p => p.hidden = p.id !== 'p-' + id);
+    place(sel, tabs.find(b => b.dataset.p === id));
+    if (push) history.replaceState(null, '', '#' + id);
+    window.scrollTo(0, 0);
+    requestAnimationFrame(() => { drawMind(); drawGantt(); });
+  }
+  tabs.forEach(b => {
+    b.addEventListener('click', () => show(b.dataset.p, true));
+    b.addEventListener('pointerenter', () => { place(hl, b); hl.style.opacity = b.getAttribute('aria-selected') === 'true' ? 0 : 1; });
+  });
+  nav.addEventListener('pointerleave', () => hl.style.opacity = 0);
+  nav.addEventListener('keydown', e => {
+    const i = tabs.findIndex(b => b.getAttribute('aria-selected') === 'true');
+    if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
+      const n = tabs[(i + (e.key === 'ArrowRight' ? 1 : tabs.length - 1)) % tabs.length];
+      n.focus(); show(n.dataset.p, true);
+    }
+  });
+  const top = document.getElementById('top');
+  addEventListener('scroll', () => top.classList.toggle('scrolled', scrollY > 4), { passive: true });
+
+  /* ---------- 思维导图连线 ---------- */
+  const mind = document.getElementById('mind');
+  function drawMind() {
+    const svg = mind.querySelector('svg');
+    if (mind.offsetParent === null || getComputedStyle(svg).display === 'none') return;
+    const box = mind.getBoundingClientRect();
+    const root = mind.querySelector('.root').getBoundingClientRect();
+    let d = '';
+    mind.querySelectorAll('.col').forEach(col => {
+      const left = col.dataset.side === 'l';
+      col.querySelectorAll('.branch').forEach(c => {
+        const r = c.getBoundingClientRect();
+        const x1 = (left ? root.left : root.right) - box.left, y1 = root.top + root.height / 2 - box.top;
+        const x2 = (left ? r.right : r.left) - box.left, y2 = r.top + r.height / 2 - box.top;
+        const mx = (x1 + x2) / 2;
+        d += `M${x1} ${y1}C${mx} ${y1} ${mx} ${y2} ${x2} ${y2}`;
+      });
+    });
+    svg.innerHTML = `<path d="${d}"/>`;
+  }
+  new ResizeObserver(drawMind).observe(mind);
+
+  /* ---------- 甘特图 ---------- */
+  const T0 = Date.UTC(2026, 11, 1), T1 = Date.UTC(2027, 5, 1);
+  const day = s => { const [y, m, d] = s.split('-').map(Number); return Date.UTC(y, m - 1, d); };
+  const ms = [
+    ['2026-12-10', '免费消费者票留不留'], ['2026-12-15', '小红书测不测，定供应商'], ['2026-12-20', '票价和券池、购票系统上架、技术需求冻结'],
+    ['2026-12-25', '问卷和实名方式'], ['2026-12-31', '账号分工、社群方案'], ['2027-02-06', '春节'], ['2027-02-16', '投放开跑'],
+    ['2027-03-15', '淘汰 1 家供应商'], ['2027-04-05', '清明'], ['2027-04-11', '停做新素材'],
+    ['2027-04-12', '付费票退票截止'], ['2027-04-21', '开展'], ['2027-04-24', '发券和退款']
+  ];
+  const rows = [
+    ['投放', [['2026-12-01', '2026-12-18', '比稿，定 3 家供应商'], ['2027-01-04', '2027-02-05', '开户，小程序回传联调压测'], ['2027-02-16', '2027-03-15', '冷启测试'], ['2027-03-16', '2027-04-10', '加速放量'], ['2027-04-11', '2027-04-23', '冲刺决战'], ['2027-04-24', '2027-05-14', '结算和复盘']]],
+    ['内容素材', [['2026-12-07', '2026-12-31', '定方向和钩子'], ['2027-01-04', '2027-02-05', '首批素材：横图、九宫格、券图'], ['2027-02-16', '2027-04-10', '测爆款，复刻爆款，持续上新'], ['2027-04-11', '2027-04-23', '只用已验证的爆款']]],
+    ['点对点', [['2026-12-01', '2026-12-31', '盘点账号，分组定人'], ['2027-01-04', '2027-02-05', '话术、海报、注册链接'], ['2027-02-16', '2027-03-15', '第一轮 一对一'], ['2027-03-16', '2027-04-02', '第二轮 测试和精选'], ['2027-04-06', '2027-04-13', '第三轮 全量'], ['2027-04-14', '2027-04-20', '第四轮 下周失效']]],
+    ['短信', [['2027-01-04', '2027-02-05', '名单收集和清洗'], ['2027-03-25', '2027-04-16', '催领票 5–6 轮'], ['2027-04-15', '2027-04-21', '催到场 4 轮'], ['2027-04-24', '2027-04-27', '发券码']]],
+    ['付费票与品牌券', [['2026-12-01', '2026-12-20', '定票价和券池'], ['2026-12-07', '2027-01-29', 'BD 招券，拿书面承诺'], ['2027-01-11', '2027-02-05', '券入库，系统上架'], ['2027-02-16', '2027-04-23', '盯券量，补券'], ['2027-04-24', '2027-05-14', '发券、退款、开票']]],
+    ['大客户邀请', [['2026-12-07', '2026-12-31', '付费客户名单、邀请函模板、展商工具需求'], ['2027-01-04', '2027-02-05', '开发展商邀约工具'], ['2027-02-16', '2027-04-13', '发邀请函，展商开始邀约'], ['2027-04-14', '2027-04-20', '确认行程'], ['2027-04-24', '2027-05-14', '回访，给展商权益']]],
+    ['数据与系统', [['2026-12-01', '2026-12-20', '需求冻结'], ['2027-01-04', '2027-02-05', '总表、注册小程序来源参数'], ['2027-01-11', '2027-01-22', '通讯录匹配测试'], ['2027-02-16', '2027-04-23', '每周数据追踪']]],
+    ['催到场', [['2026-12-14', '2026-12-31', '定观展票群方案'], ['2027-02-16', '2027-04-13', '已注册的人进观展票群，持续推内容'], ['2027-04-14', '2027-04-21', '各渠道集中催到场']]]
+  ];
+  const gantt = document.getElementById('gantt');
+  const canvas = document.createElement('canvas').getContext('2d');
+  function textW(t) { canvas.font = `400 12px ${getComputedStyle(document.body).fontFamily}`; return canvas.measureText(t).width; }
+  function pack(items) { // items: {x,w(occupied)}
+    const ends = [];
+    items.forEach(it => {
+      let k = ends.findIndex(e => e <= it.x - 4);
+      if (k < 0) { k = ends.length; ends.push(0); }
+      ends[k] = it.x + it.w; it.lane = k;
+    });
+    return Math.max(ends.length, 1);
+  }
+  let gw = 0;
+  function drawGantt() {
+    if (gantt.offsetParent === null) return;
+    const total = Math.max(gantt.parentElement.clientWidth - 4, 1080);
+    const W = total - 120;
+    if (W === gw && gantt.childElementCount) return;
+    gw = W;
+    const X = s => (day(s) - T0) / (T1 - T0) * W;
+    const deco = () => {
+      let s = '';
+      for (let m = 0; m < 6; m++) { const x = (Date.UTC(2026, 11 + m, 1) - T0) / (T1 - T0) * W; if (m) s += `<div class="g-vline" style="left:${x}px"></div>`; }
+      s += `<div class="g-band" style="left:${X('2027-04-21')}px;width:${X('2027-04-24') - X('2027-04-21')}px"></div>`;
+      s += `<div class="g-key" style="left:${X('2027-02-06')}px"></div><div class="g-key" style="left:${X('2027-04-05')}px"></div>`;
+      return s;
+    };
+    let html = '<div class="g-row g-head"><div class="g-label"></div><div class="g-track">';
+    ['2026-12', '2027-01', '2027-02', '2027-03', '2027-04', '2027-05'].forEach((m, i) => {
+      const x = (Date.UTC(2026, 11 + i, 1) - T0) / (T1 - T0) * W;
+      html += `<div class="g-month" style="left:${x}px">${i ? '' : '2026 年 '}${i === 1 ? '2027 年 ' : ''}${Number(m.slice(5))} 月</div>`;
+    });
+    html += '</div></div>';
+    // 关键日期
+    const mi = ms.map(([d, t]) => ({ x: X(d) - 5, w: textW(d.slice(5) + ' ' + t) + 26, d, t }));
+    const ml = pack(mi);
+    html += `<div class="g-row"><div class="g-label semi">关键日期</div><div class="g-track" style="height:${ml * 28 + 12}px">${deco()}`;
+    mi.forEach(it => { html += `<div class="g-ms" style="left:${it.x}px;top:${6 + it.lane * 28}px"><i></i><span class="d">${it.d.slice(5)}</span><span>${it.t}</span></div>`; });
+    html += '</div></div>';
+    rows.forEach(([name, bars]) => {
+      const items = bars.map(([a, b, t]) => { const x = X(a), bw = Math.max(X(b) - X(a) + W / 182, 8); return { x, bw, w: Math.max(bw, textW(t) + 18), t, a, b }; });
+      const n = pack(items);
+      html += `<div class="g-row"><div class="g-label semi">${name}</div><div class="g-track" style="height:${n * 30 + 12}px">${deco()}`;
+      items.forEach(it => { html += `<div class="g-bar" title="${it.a} 至 ${it.b}　${it.t}" style="left:${it.x}px;top:${6 + it.lane * 30}px;width:${it.bw}px"><span>${it.t}</span></div>`; });
+      html += '</div></div>';
+    });
+    gantt.innerHTML = html;
+  }
+  new ResizeObserver(() => { gw = 0; drawGantt(); }).observe(gantt.parentElement);
+
+  /* ---------- 每月清单 ---------- */
+  const months = [
+    ['12 月', '定人、定钱、定规矩', [
+      '12 月中比稿定 3 家投放供应商，合同写进小程序回传、报价口径、老客不收费、数据回流',
+      '拍板 6 件事：免费消费者票 12-10、小红书 12-15、票价和券池 12-20、购票系统同步上架 12-20、问卷和实名 12-25、账号分工 12-31',
+      'BD 开始找展商、赛事、演讲嘉宾出券，拿书面承诺',
+      '盘点全公司绿微账号；12-31 前定观展票群方案',
+      '列出重点企业名单，写邀请函模板；提展商邀约工具需求；12-20 冻结技术需求',
+      '拉三组数据：2026 年按人群、城市、提前报名天数拆的到场率；可再联系的老观众人数；品牌券承诺情况'
+    ], '供应商合同、6 项决定、技术需求单、账号清单'],
+    ['1 月', '系统和素材在春节前备齐', [
+      '技术做完：注册小程序（问卷、实名、付费票、来源参数）、总表、展商邀约工具',
+      '开足投放账户，和供应商完成回传联调压测',
+      '首批素材：横图、九宫格、券图，四类钩子各一套；视频放备选',
+      '点对点话术和海报；短信名单收齐清洗',
+      '品牌券入库测试',
+      '用 500 个号码测通讯录匹配，测两种加好友方式的通过率'
+    ], '报名到总表能跑通、首批素材、清洗好的名单'],
+    ['2 月', '春节 2-06，节后开跑', [
+      '2-16 投放冷启，3 家一起跑，测四类钩子和两种票',
+      '点对点第一轮：一对一触达高价值老客户',
+      '付费票上线，盯付费转化和券量',
+      '重点客户发定制邀请函；展商邀约工具发给展商'
+    ], '第一批成本数据'],
+    ['3 月', '筛选、放量', [
+      '3-15 淘汰 1 家供应商：看专业报名成本、问卷质量、付费转化，这时还看不到到场率',
+      '3-16 起加速：复刻爆款，多账户扩量',
+      '点对点第二轮：500 人测试，联采会邀约',
+      '3-25 起短信催领票',
+      '两家主力供应商之间按成本调预算'
+    ], '两家主力供应商、第一批爆款'],
+    ['4 月', '冲刺和展期', [
+      '4-06 至 4-13 点对点第三轮全量，避开清明 4-05',
+      '4-11 起停做新素材，预算全给爆款；展前 10 天加展中 1.5 天花掉 75% 预算',
+      '4-12 付费票退票截止',
+      '4-14 至 4-20 点对点第四轮；4-15、4-18、4-20、4-21 短信催到场',
+      '4-21 至 4-23 展期：前 1.5 天继续投，盯闸机和券量',
+      '4-24 起发券码，未到场自动退款'
+    ], '到场 4 万人以上'],
+    ['5 月', '收尾和复盘', [
+      '到场确认后开发票',
+      '把「你邀请的人谁来了」还给展商，兑换权益',
+      '给重点客户发精华盘点回访',
+      '全渠道复盘：每个渠道的报名、到场、到场成本，定明年基线'
+    ], '复盘报告和 2028 年基线']
+  ];
+  document.getElementById('months').innerHTML = months.map(([m, theme, list, got]) =>
+    `<div class="card"><div class="card-title">${m}</div><p class="cap theme">${theme}</p><ul class="dot-list">${list.map(x => `<li>${x}</li>`).join('')}</ul><div class="got"><p class="cap">月底拿到</p><p>${got}</p></div></div>`).join('');
+
+  /* ---------- 难点 ---------- */
+  const hards = [
+    ['手机号和绿微好友对不上', '个人微信不能导出好友手机号，也不能批量比对；外挂和破解工具违反微信协议，会封号',
+      ['对不上的好友单独一拨，发带账号参数的注册链接；已注册的人登录后会直接看到自己的门票，不会重复注册', '好友点开登录后，就自动记下「这个手机号在哪个号上」，下次就能分进对应的一拨', '已报名的手机号存进专用工作手机通讯录，在「添加朋友 → 手机联系人」里看谁已是好友、谁还没加', '从今天起加好友时，备注写「姓名 | 公司 | 手机号」'],
+      '500 个号码测通讯录匹配能对上几成；注册小程序能不能按账号记来源'],
+    ['加好友覆盖不全', '绿微主动加人有频率限制，官方不公布；企业微信满足不了你们的需求',
+      ['让客户主动来加：注册成功页放顾问微信', '重点客户由专人在通讯录匹配后添加，对方看到的来源是手机通讯录', '加人前先查总表，已经在别的号上的不再加'],
+      '主动加和客户来加的通过率，各测一批'],
+    ['群发不能连累其他账号', '点对点要群发，一旦被限制，同设备、同实名的号可能一起受影响',
+      ['不用 RPA 和外挂群发，违反微信协议，是封号主因', '用微信自带的群发助手', '群发号用独立手机、独立手机号，不登录在销售的设备上', '文字和海报分开发，先小批量'],
+      '每个号每天发多少安全，只能边发边看'],
+    ['4 万到场的缺口', '2026 年到场 26,108 人，差约 1.39 万；靠微信投放补，一个到场约 251 元，要约 350 万；投放到场率提高 10 个点也只多约 3,100 人',
+      ['大头靠到场率高的渠道：展商邀约、老客户唤醒、短信', '投放靠问卷和付费票筛人，提高到场率', '总预算 200 万封顶，缺口不能靠加钱补'],
+      '可再联系的老观众有多少；展商邀约能带来多少人'],
+    ['付费报名来得太晚', '展前 10 天和展中 1.5 天带来约 80% 的投放报名，离开展只有 1–10 天，社群来不及服务',
+      ['社群只重点服务早报名和重点客户', '临展报名靠短信和服务号提醒', '用「早报名才有」的权益把报名往前拉'],
+      '拉 2026 年「提前几天报名」和到场率的对照：临展报名的到场率如果也低，说明是不想来，钱该花在筛人上'],
+    ['品牌券谈不下来或发不出去', '优先品牌自营平台会抬高 BD 门槛；来的人多了券不够，来的人少了券浪费；展前开票后未到场退款要红冲',
+      ['12 月先拿书面承诺', '按预计到场人数备券，不按报名人数', '用到 80% 预警补券，用完换兜底券包', '到场确认后再开发票'],
+      ''],
+    ['券码收不到和客诉', '只靠短信发券，被拦截、填错号、没刷闸机的人都会拿不到；问题拖到展后才暴露，现场又没人能处理',
+      ['券码放在「我的 → 兑换券」，短信只负责提醒', '入场即解锁，现场设票券帮助服务台，可以查询和补录', '购买页写清到场认定、品牌兑现规则和申诉期', '客诉分三类处理，AI 客服先接，转人工后 2 个工作日内回复'],
+      '闸机数据回传要多久；品牌平台能不能回传兑换数据'],
+    ['供应商的小程序和数据', '供应商习惯用自己的小程序收问卷和回传；数据不在我方就没法去重和统计；3-15 还看不到到场率',
+      ['优先用我方小程序', '用对方小程序的话，合同写死：能承载付费券，手机号和问卷实时回到总表，老客激活不收费', '确认报价是按注册还是按到场', '3-15 按专业报名成本、问卷质量、付费转化淘汰，这时还看不到到场率'],
+      '供应商说的到场率 47%–55% 要有出处，签约前核实'],
+    ['报名门槛和合规', '2026 年为冲报名砍了问卷，来了很多泛人群；加回问卷和实名会抬高报名成本；收完整身份证号有隐私风险',
+      ['问卷先小范围测流失率', '考虑用手机号实名核验代替收身份证号', '授权条款请法务审'],
+      '报名成本涨 30% 时，到场率要到 32% 左右才和 2026 年一个到场 251 元持平'],
+    ['高层没有抓手', '投放报名表没有职务字段，不知道来了多少高层；高层不缺免费票，缺时间',
+      ['设「高层头衔人数」和「重点企业到场」目标', '定制邀请函、组团、团队观展、约见', '重点客户专人跟进，不进普通群'],
+      ''],
+    ['排期撞假期', '2027 年清明是 4-05（周一），原定 4-04 起的全量推送会撞上；春节 2-06，节后才能开跑',
+      ['全量推送改为 4-01 至 4-02 预热，4-06 起推', '系统和素材必须在 1 月做完'],
+      '2027 年官方放假安排出来后再核一遍']
+  ];
+  document.getElementById('hards').innerHTML = hards.map(([t, why, how, check]) =>
+    `<div class="card"><div class="card-title">${t}</div>
+      <div class="sec"><p class="cap">为什么难</p><p>${why}</p></div>
+      <div class="sec"><p class="cap">怎么解</p><ul class="dot-list">${how.map(x => `<li>${x}</li>`).join('')}</ul></div>
+      ${check ? `<div class="sec"><p class="cap">还要验证</p><p>${check}</p></div>` : ''}</div>`).join('');
+
+  /* ---------- 创新点 ---------- */
+  const ideas = [
+    [
+      ['付费观展票 + 品牌券', '筛掉不想来的人，给来的人一个必须到场的理由', ['免费票和付费票并行', '到场后自动发品牌券码（短信 + 服务号 AI 客服），没到场自动退款', '券来自展商、赛事、演讲嘉宾，优先品牌自营平台'], '付费票到场率、退款率、券核销'],
+      ['落地页显示热度', '让人看到很多人在关注，同时拿到兴趣数据', ['显示总浏览量、产品曝光和点击、已加购人数', '记下每个人点了哪些产品，反哺招展'], '落地页转化率、各品类点击热度'],
+      ['观展票群催到场', '注册了不来是最大的浪费；早注册的人离开展远，容易忘', ['只放注册了的人，不用于邀观；其他社群照常可以群发邀观', '已注册的人按问卷分群：渠道、品牌和代工、老板、付费券观众', '不同群不同频次和内容，老板群每周不超过 1 次', '展前推展商名录、新品、日程，展期推现场活动'], '入群和没入群的人，到场率差多少']
+    ],
+    [
+      ['展商邀约工具', '展商的客户正是我们要的渠道和品牌，邀请成本几乎为零', ['每家展商一个专属链接', '展商可以自己做宣传页和产品页，用来邀请客户', '沟通时重点讲这是展商权益', '展后把到场名单还给展商，按到场人数给下届选位优先、曝光位等'], '每家展商邀请了多少人、到场多少人'],
+      ['大客户组团邀请（观展 + 参会）', '老板一个人容易犹豫，组团成行更稳', ['写针对这家公司的定制邀请函', '配一份精华盘点：抓住大老板的焦虑点，讲行业大趋势', '邀请老板带核心班子一起来'], '每家公司到场人数、有没有高层'],
+      ['团队观展', '老板不一定有空，但愿意派团队来学；团队来了，老板跟着来的可能性更大', ['讲学习价值：带着问题来，带着结论回去', '按团队给名额，按岗位给看展路线和要找的东西的清单', '展后给复盘模板，方便团队回公司汇报'], '每家公司到场人数、有没有高层'],
+      ['账号专属注册链接', '解决手机号和绿微好友对不上', ['每个绿微账号一条带参数的注册链接', '好友点开登录，自动记下他在哪个号上；已注册的直接看到门票'], '点开率、对上的手机号数量']
+    ],
+    [
+      ['采购商约见', '手里有约好的会，人就会来；国际展会常用的做法', ['先找 100–200 个渠道采购', '按他想找的品类匹配展商，提前约好 15 分钟见面'], '约见完成数、这些采购商的到场率'],
+      ['渠道采购当赛事评委', '有身份、有任务的人，到场率天然高', ['用现有的赛事', '设一个必须到现场的评审环节'], '评委到场率'],
+      ['详细问卷回传算法', '供应商的说法：问卷越详细，算法找人越准，且不影响报名成本；老客被广告激活和裂变报名不收费', ['写进合同', '用我们自己的数据验证，不直接相信案例'], '报名成本、专业观众比例、到场率']
+    ]
+  ];
+  document.querySelectorAll('[data-ideas]').forEach(el => {
+    el.innerHTML = ideas[+el.dataset.ideas].map(([t, why, how, kpi]) =>
+      `<div class="card"><div class="card-title">${t}</div>
+        <div class="sec"><p class="cap">解决什么</p><p>${why}</p></div>
+        <div class="sec"><p class="cap">怎么做</p><ul class="dot-list">${how.map(x => `<li>${x}</li>`).join('')}</ul></div>
+        <div class="sec"><p class="cap">看什么数</p><p>${kpi}</p></div></div>`).join('');
+  });
+
+  show(location.hash.slice(1) || 'duty', false);
+  document.fonts && document.fonts.ready.then(() => { place(sel, tabs.find(b => b.getAttribute('aria-selected') === 'true')); drawMind(); gw = 0; drawGantt(); });
+})();
+</script>
+</body>
+</html>
